@@ -159,7 +159,11 @@
 
         return (
           <div className="app">
-            <Timer limitSecond={3} onFinished={finishTimer} />
+            <Timer
+              limitSecond={3}
+              onFinished={finishTimer}
+              paused={gameFinished}
+            />
 
             <Card mainText={mainText} subText={subText} />
 
@@ -175,11 +179,13 @@
         )
       }
 
-      function Timer({ limitSecond, onFinished }) {
+      function Timer({ limitSecond, paused, onFinished }) {
         const [second, setSecond] = useState(limitSecond)
         const finished = second <= 0
 
         useEffect(() => {
+          if (paused) return
+
           if (finished) {
             if (onFinished) onFinished()
             return
@@ -187,7 +193,7 @@
 
           const timerId = setInterval(() => setSecond(v => v - 1), 1000)
           return () => clearInterval(timerId)
-        }, [finished])
+        }, [finished, paused])
 
         const s = (second % 60).toString().padStart(2, '0')
         const m = ((second - (second % 60)) / 60).toString().padStart(2, '0')
