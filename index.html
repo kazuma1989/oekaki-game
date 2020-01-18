@@ -79,6 +79,10 @@
         background-color: gainsboro;
         border-radius: 2vw;
       }
+      .button-primary {
+        background-color: steelblue;
+        color: white;
+      }
 
       .overlay {
         position: fixed;
@@ -91,6 +95,19 @@
         flex-flow: column nowrap;
         justify-content: center;
         align-items: center;
+      }
+
+      .config-dialog {
+        display: flex;
+        flex-flow: column nowrap;
+      }
+      .config-dialog-value {
+        text-align: center;
+        font-size: 20vw;
+      }
+      .config-dialog-start-button {
+        padding: 4vw;
+        margin-top: 8vw;
       }
 
       .result-dialog-label {
@@ -145,19 +162,29 @@
       ReactDOM.render(<App values={values} />, document.getElementById('root'))
 
       function App({ values }) {
-        const [limitSecond, setLimitSecond] = useState(300)
-
         const [result, setResult] = useState(null)
         const { passCount, nextCount } = result || {}
-        const finished = Boolean(result)
+        const finished = result !== null
+
+        const [config, setConfig] = useState(null)
+        const { limitSecond } = config || {}
+        const configMode = config === null
 
         return (
           <div className="app fullscreen">
-            <Game
-              limitSecond={limitSecond}
-              values={values}
-              onFinish={setResult}
-            />
+            {!configMode && (
+              <Game
+                limitSecond={limitSecond}
+                values={values}
+                onFinish={setResult}
+              />
+            )}
+
+            {configMode && (
+              <Overlay>
+                <ConfigDialog onFinish={setConfig} />
+              </Overlay>
+            )}
 
             {finished && (
               <Overlay>
@@ -209,7 +236,7 @@
             <Card mainText={mainText} subText={subText} />
 
             <Button label="パス" onClick={pass} />
-            <Button label="次へ" onClick={next} />
+            <Button className="button-primary" label="次へ" onClick={next} />
           </div>
         )
       }
@@ -230,14 +257,7 @@
           return () => clearInterval(timerId)
         }, [finished, paused])
 
-        const s = (second % 60).toString().padStart(2, '0')
-        const m = ((second - (second % 60)) / 60).toString().padStart(2, '0')
-
-        return (
-          <div className="timer base-font">
-            {m}:{s}
-          </div>
-        )
+        return <div className="timer base-font">{toTimeString(second)}</div>
       }
 
       function Card({ mainText, subText }) {
@@ -249,9 +269,13 @@
         )
       }
 
-      function Button({ label, onClick }) {
+      function Button({ label, onClick, className }) {
         return (
-          <button className="button base-font" type="button" onClick={onClick}>
+          <button
+            type="button"
+            className={`button base-font ${className}`}
+            onClick={onClick}
+          >
             {label}
           </button>
         )
@@ -259,6 +283,38 @@
 
       function Overlay({ children }) {
         return <div className="overlay fullscreen">{children}</div>
+      }
+
+      function ConfigDialog({ onFinish }) {
+        const [limitSecond, setLimitSecond] = useState(300)
+        const increment = () =>
+          setLimitSecond(currentValue => {
+            const newValue = currentValue + 30
+            return newValue <= 3600 ? newValue : currentValue
+          })
+        const decrement = () =>
+          setLimitSecond(currentValue => {
+            const newValue = currentValue - 30
+            return newValue > 0 ? newValue : currentValue
+          })
+
+        const startGame = () => onFinish({ limitSecond })
+
+        return (
+          <div className="config-dialog base-font">
+            <Button label="+" onClick={increment} />
+            <div className="config-dialog-value">
+              {toTimeString(limitSecond)}
+            </div>
+            <Button label="-" onClick={decrement} />
+
+            <Button
+              className="config-dialog-start-button button-primary"
+              label="ゲーム開始！"
+              onClick={startGame}
+            />
+          </div>
+        )
       }
 
       function ResultDialog({ passCount, nextCount }) {
@@ -274,6 +330,13 @@
             </div>
           </div>
         )
+      }
+
+      function toTimeString(second) {
+        const ss = (second % 60).toString().padStart(2, '0')
+        const mm = ((second - (second % 60)) / 60).toString().padStart(2, '0')
+
+        return `${mm}:${ss}`
       }
     </script>
   </body>
