@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>おえかきの森</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/ress@2.0.4/dist/ress.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c:900&display=swap&subset=japanese"
+    />
+
+    <style>
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .base-font {
+        font-family: 'M PLUS Rounded 1c', 'ヒラギノ角ゴ StdN W8', sans-serif;
+        font-size: 10vw;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .border-box {
+        border: solid 1px silver;
+        box-sizing: border-box;
+      }
+
+      .app {
+        width: 100%;
+        height: 100%;
+
+        display: grid;
+        grid-template:
+          'timer timer' 15%
+          'card card' auto
+          'button-pass button-next' 20%
+          / 50% 50%;
+      }
+
+      .timer {
+        grid-area: timer;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .card {
+        grid-area: card;
+
+        padding: 1em;
+
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .card-main-text {
+        text-align: center;
+        font-size: 15vw;
+        color: rgba(0, 0, 0, 0.8);
+      }
+
+      .card-sub-text {
+        text-align: center;
+        font-size: 7vw;
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      .button {
+        margin: 2vw;
+
+        background-color: gainsboro;
+        border-radius: 2vw;
+      }
+    </style>
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+  </head>
+
+  <body>
+    <div id="root" style="height: 100%;"></div>
+
+    <div id="sheet-values" style="display: none;">
+      <?= JSON.stringify(getValues()) ?>
+    </div>
+    <script>
+      const el = document.getElementById('sheet-values')
+      if (!el.textContent.trim()) {
+        el.textContent =
+          '[["ヘッダー","",""],["どらえもん","みんなのお友達だよ！！！",""],["プーさん","",""],["しゃっくり","",""]]'
+      }
+    </script>
+
+    <script type="text/babel">
+      const { React, ReactDOM } = window
+      const { useState, useEffect } = React
+
+      const sheetValues = document.getElementById('sheet-values').textContent
+      const values = JSON.parse(sheetValues)
+        .slice(1)
+        .map(([mainText, subText, disabled]) => ({
+          mainText,
+          subText,
+          disabled,
+        }))
+        .filter(
+          ({ mainText, subText, disabled }) =>
+            !disabled && (mainText || subText),
+        )
+
+      ReactDOM.render(<App values={values} />, document.getElementById('root'))
+
+      function App({ values = [] }) {
+        const { mainText, subText } = values[
+          Math.floor(Math.random() * values.length)
+        ]
+
+        return (
+          <div className="app">
+            <Timer limitSecond={3} onFinished={() => console.log('finished')} />
+
+            <Card mainText={mainText} subText={subText} />
+
+            <Button label="パス" />
+            <Button label="次へ" />
+          </div>
+        )
+      }
+
+      function Timer({ limitSecond, onFinished }) {
+        const [second, setSecond] = useState(limitSecond)
+        const finished = second <= 0
+
+        useEffect(() => {
+          if (finished) {
+            if (onFinished) onFinished()
+            return
+          }
+
+          const timerId = setInterval(() => setSecond(v => v - 1), 1000)
+          return () => clearInterval(timerId)
+        }, [finished])
+
+        const s = (second % 60).toString().padStart(2, '0')
+        const m = ((second - (second % 60)) / 60).toString().padStart(2, '0')
+
+        return (
+          <div className="timer base-font">
+            {m}:{s}
+          </div>
+        )
+      }
+
+      function Card({ mainText, subText }) {
+        return (
+          <div className="card base-font">
+            <span className="card-main-text">{mainText}</span>
+            <span className="card-sub-text">{subText}</span>
+          </div>
+        )
+      }
+
+      function Button({ label }) {
+        return (
+          <button className="button base-font" type="button">
+            {label}
+          </button>
+        )
+      }
+    </script>
+  </body>
+</html>
