@@ -29,11 +29,6 @@
         color: rgba(0, 0, 0, 0.6);
       }
 
-      .border-box {
-        border: solid 1px silver;
-        box-sizing: border-box;
-      }
-
       .app {
         width: 100%;
         height: 100%;
@@ -83,6 +78,25 @@
         background-color: gainsboro;
         border-radius: 2vw;
       }
+
+      .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+
+        background-color: rgba(255, 255, 255, 0.7);
+
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .dialog-finish {
+        color: red;
+        font-size: 20vw;
+        transform: rotate(-15deg);
+      }
     </style>
 
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -106,7 +120,7 @@
 
     <script type="text/babel">
       const { React, ReactDOM } = window
-      const { useState, useEffect } = React
+      const { useState, useEffect, useMemo } = React
 
       const sheetValues = document.getElementById('sheet-values').textContent
       const values = JSON.parse(sheetValues)
@@ -124,8 +138,18 @@
       ReactDOM.render(<App values={values} />, document.getElementById('root'))
 
       function App({ values = [] }) {
-        const { mainText, subText } = values[
-          Math.floor(Math.random() * values.length)
+        const shuffled = useMemo(
+          () => [...values].sort(() => Math.random() - 0.5),
+          [],
+        )
+
+        const [index, setIndex] = useState(0)
+        const pass = () => setIndex(v => v + 1)
+        const next = () => setIndex(v => v + 1)
+
+        const questionFinished = index >= shuffled.length
+        const { mainText, subText } = shuffled[
+          !questionFinished ? index : shuffled.length - 1
         ]
 
         return (
@@ -134,8 +158,14 @@
 
             <Card mainText={mainText} subText={subText} />
 
-            <Button label="パス" />
-            <Button label="次へ" />
+            <Button label="パス" onClick={pass} />
+            <Button label="次へ" onClick={next} />
+
+            {questionFinished && (
+              <Overlay>
+                <DialogFinish label="終了〜！" />
+              </Overlay>
+            )}
           </div>
         )
       }
@@ -173,12 +203,20 @@
         )
       }
 
-      function Button({ label }) {
+      function Button({ label, onClick }) {
         return (
-          <button className="button base-font" type="button">
+          <button className="button base-font" type="button" onClick={onClick}>
             {label}
           </button>
         )
+      }
+
+      function Overlay({ children }) {
+        return <div className="overlay">{children}</div>
+      }
+
+      function DialogFinish({ label }) {
+        return <div className="dialog-finish base-font">{label}</div>
       }
     </script>
   </body>
