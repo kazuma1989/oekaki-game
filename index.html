@@ -29,10 +29,12 @@
         color: rgba(0, 0, 0, 0.6);
       }
 
-      .app {
+      .fullscreen {
         width: 100%;
         height: 100%;
+      }
 
+      .game {
         display: grid;
         grid-template:
           'timer timer' 15%
@@ -52,7 +54,7 @@
       .card {
         grid-area: card;
 
-        padding: 1em;
+        padding: 3vw;
 
         display: flex;
         flex-flow: column nowrap;
@@ -79,8 +81,8 @@
 
       .overlay {
         position: fixed;
-        width: 100%;
-        height: 100%;
+        top: 0;
+        left: 0;
 
         background-color: rgba(255, 255, 255, 0.7);
 
@@ -90,8 +92,6 @@
         align-items: center;
       }
 
-      .result-dialog {
-      }
       .result-dialog-label {
         color: red;
         font-size: 20vw;
@@ -143,7 +143,31 @@
 
       ReactDOM.render(<App values={values} />, document.getElementById('root'))
 
-      function App({ values = [] }) {
+      function App({ values }) {
+        const [limitSecond, setLimitSecond] = useState(300)
+
+        const [result, setResult] = useState(null)
+        const { passCount, nextCount } = result || {}
+        const finished = Boolean(result)
+
+        return (
+          <div className="app fullscreen">
+            <Game
+              limitSecond={limitSecond}
+              values={values}
+              onFinish={setResult}
+            />
+
+            {finished && (
+              <Overlay>
+                <ResultDialog passCount={passCount} nextCount={nextCount} />
+              </Overlay>
+            )}
+          </div>
+        )
+      }
+
+      function Game({ limitSecond, values, onFinish }) {
         const shuffled = useMemo(
           () => [...values].sort(() => Math.random() - 0.5),
           [],
@@ -161,16 +185,23 @@
         const finishTimer = () => setTimerFinished(true)
 
         const gameFinished = questionFinished || timerFinished
+        useEffect(() => {
+          if (!gameFinished) return
+
+          if (onFinish) {
+            onFinish({ passCount, nextCount })
+          }
+        }, [gameFinished])
 
         const { mainText, subText } = shuffled[
           index <= shuffled.length - 1 ? index : shuffled.length - 1
         ]
 
         return (
-          <div className="app">
+          <div className="game fullscreen">
             <Timer
-              limitSecond={3}
-              onFinished={finishTimer}
+              limitSecond={limitSecond}
+              onFinish={finishTimer}
               paused={gameFinished}
             />
 
@@ -178,17 +209,11 @@
 
             <Button label="パス" onClick={pass} />
             <Button label="次へ" onClick={next} />
-
-            {gameFinished && (
-              <Overlay>
-                <ResultDialog passCount={passCount} nextCount={nextCount} />
-              </Overlay>
-            )}
           </div>
         )
       }
 
-      function Timer({ limitSecond, paused, onFinished }) {
+      function Timer({ limitSecond, paused, onFinish }) {
         const [second, setSecond] = useState(limitSecond)
         const finished = second <= 0
 
@@ -196,7 +221,7 @@
           if (paused) return
 
           if (finished) {
-            if (onFinished) onFinished()
+            if (onFinish) onFinish()
             return
           }
 
@@ -232,7 +257,7 @@
       }
 
       function Overlay({ children }) {
-        return <div className="overlay">{children}</div>
+        return <div className="overlay fullscreen">{children}</div>
       }
 
       function ResultDialog({ passCount, nextCount }) {
