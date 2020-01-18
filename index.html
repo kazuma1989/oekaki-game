@@ -59,13 +59,11 @@
         justify-content: center;
         align-items: center;
       }
-
       .card-main-text {
         text-align: center;
         font-size: 15vw;
         color: rgba(0, 0, 0, 0.8);
       }
-
       .card-sub-text {
         text-align: center;
         font-size: 7vw;
@@ -92,10 +90,18 @@
         align-items: center;
       }
 
-      .dialog-finish {
+      .result-dialog {
+      }
+      .result-dialog-label {
         color: red;
         font-size: 20vw;
-        transform: rotate(-15deg);
+        transform: rotateZ(-15deg) translateY(-10%);
+      }
+      .result-dialog-next-count {
+        text-align: right;
+      }
+      .result-dialog-pass-count {
+        text-align: right;
       }
     </style>
 
@@ -143,19 +149,22 @@
           [],
         )
 
-        const [index, setIndex] = useState(0)
-        const pass = () => setIndex(v => v + 1)
-        const next = () => setIndex(v => v + 1)
+        const [passCount, setPassCount] = useState(0)
+        const [nextCount, setNextCount] = useState(0)
+        const pass = () => setPassCount(v => v + 1)
+        const next = () => setNextCount(v => v + 1)
 
+        const index = passCount + nextCount
         const questionFinished = index >= shuffled.length
-        const { mainText, subText } = shuffled[
-          !questionFinished ? index : shuffled.length - 1
-        ]
 
         const [timerFinished, setTimerFinished] = useState(false)
         const finishTimer = () => setTimerFinished(true)
 
         const gameFinished = questionFinished || timerFinished
+
+        const { mainText, subText } = shuffled[
+          index <= shuffled.length - 1 ? index : shuffled.length - 1
+        ]
 
         return (
           <div className="app">
@@ -172,7 +181,7 @@
 
             {gameFinished && (
               <Overlay>
-                <DialogFinish label="終了〜！" />
+                <ResultDialog passCount={passCount} nextCount={nextCount} />
               </Overlay>
             )}
           </div>
@@ -226,8 +235,19 @@
         return <div className="overlay">{children}</div>
       }
 
-      function DialogFinish({ label }) {
-        return <div className="dialog-finish base-font">{label}</div>
+      function ResultDialog({ passCount, nextCount }) {
+        return (
+          <div className="result-dialog base-font">
+            <div className="result-dialog-label">終了〜</div>
+
+            <div className="result-dialog-next-count">
+              クリア {nextCount} 回！
+            </div>
+            <div className="result-dialog-pass-count">
+              パス {passCount} 回！
+            </div>
+          </div>
+        )
       }
     </script>
   </body>
