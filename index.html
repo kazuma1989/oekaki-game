@@ -152,16 +152,21 @@
           !questionFinished ? index : shuffled.length - 1
         ]
 
+        const [timerFinished, setTimerFinished] = useState(false)
+        const finishTimer = () => setTimerFinished(true)
+
+        const gameFinished = questionFinished || timerFinished
+
         return (
           <div className="app">
-            <Timer limitSecond={3} onFinished={() => console.log('finished')} />
+            <Timer limitSecond={3} onFinished={finishTimer} />
 
             <Card mainText={mainText} subText={subText} />
 
             <Button label="パス" onClick={pass} />
             <Button label="次へ" onClick={next} />
 
-            {questionFinished && (
+            {gameFinished && (
               <Overlay>
                 <DialogFinish label="終了〜！" />
               </Overlay>
