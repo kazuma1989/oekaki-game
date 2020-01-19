@@ -44,6 +44,12 @@
           / 50% 50%;
       }
 
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
       .timer {
         grid-area: timer;
 
@@ -134,37 +140,13 @@
   <body>
     <div id="root" class="fullscreen"></div>
 
-    <div id="sheet-values" style="display: none;">
-      <?= JSON.stringify(getValues()) ?>
-    </div>
-    <script>
-      const el = document.getElementById('sheet-values')
-      if (!el.textContent.trim()) {
-        el.textContent =
-          '[["ヘッダー","",""],["どらえもん","みんなのお友達だよ！！！",""],["プーさん","",""],["しゃっくり","",""]]'
-      }
-    </script>
-
     <script type="text/babel">
       const { React, ReactDOM } = window
       const { useState, useEffect, useMemo } = React
 
-      const sheetValues = document.getElementById('sheet-values').textContent
-      const values = JSON.parse(sheetValues)
-        .slice(1)
-        .map(([mainText, subText, disabled]) => ({
-          mainText,
-          subText,
-          disabled,
-        }))
-        .filter(
-          ({ mainText, subText, disabled }) =>
-            !disabled && (mainText || subText),
-        )
+      ReactDOM.render(<App />, document.getElementById('root'))
 
-      ReactDOM.render(<App values={values} />, document.getElementById('root'))
-
-      function App({ values }) {
+      function App() {
         const [result, setResult] = useState(null)
         const { passCount, nextCount } = result || {}
         const finished = result !== null
@@ -176,11 +158,7 @@
         return (
           <div className="app fullscreen">
             {!configMode && (
-              <Game
-                limitSecond={limitSecond}
-                values={values}
-                onFinish={setResult}
-              />
+              <Game limitSecond={limitSecond} onFinish={setResult} />
             )}
 
             {configMode && (
@@ -198,11 +176,27 @@
         )
       }
 
-      function Game({ limitSecond, values, onFinish }) {
-        const shuffled = useMemo(
-          () => [...values].sort(() => Math.random() - 0.5),
-          [],
-        )
+      function Game({ limitSecond, onFinish }) {
+        const [shuffled, setShuffled] = useState(null)
+        useEffect(() => {
+          fetchSheetValues().then(sheetValues => {
+            const parsed = sheetValues
+              .slice(1)
+              .map(([mainText, subText, disabled]) => ({
+                mainText,
+                subText,
+                disabled,
+              }))
+              .filter(
+                ({ mainText, subText, disabled }) =>
+                  !disabled && (mainText || subText),
+              )
+
+            // FIXME sort algorithm
+            const _shuffled = [...parsed].sort(() => Math.random() - 0.5)
+            setShuffled(_shuffled)
+          })
+        }, [])
 
         const [passCount, setPassCount] = useState(0)
         const [nextCount, setNextCount] = useState(0)
@@ -210,7 +204,7 @@
         const next = () => setNextCount(v => v + 1)
 
         const index = passCount + nextCount
-        const questionFinished = index >= shuffled.length
+        const questionFinished = shuffled && index >= shuffled.length
 
         const [timerFinished, setTimerFinished] = useState(false)
         const finishTimer = () => setTimerFinished(true)
@@ -224,9 +218,13 @@
           }
         }, [gameFinished])
 
-        const { mainText, subText } = shuffled[
-          index <= shuffled.length - 1 ? index : shuffled.length - 1
-        ]
+        const { mainText, subText } = shuffled
+          ? shuffled[index <= shuffled.length - 1 ? index : shuffled.length - 1]
+          : {}
+
+        if (!shuffled) {
+          return <div className="loading fullscreen base-font">Loading...</div>
+        }
 
         return (
           <div className="game fullscreen">
@@ -340,6 +338,32 @@
         const mm = ((second - (second % 60)) / 60).toString().padStart(2, '0')
 
         return `${mm}:${ss}`
+      }
+    </script>
+
+    <script>
+      function fetchSheetValues() {
+        return new Promise((resolve, reject) => {
+          if (window.google) {
+            const timerId = setTimeout(reject, 5000)
+
+            google.script.run
+              .withSuccessHandler(values => {
+                resolve(values)
+                clearTimeout(timerId)
+              })
+              .getValues()
+          } else {
+            const stubData = [
+              ['ヘッダー', '', ''],
+              ['どらえもん', 'みんなのお友達だよ！！！', ''],
+              ['プーさん', '', ''],
+              ['しゃっくり', '', ''],
+            ]
+
+            setTimeout(() => resolve(stubData), 1000)
+          }
+        })
       }
     </script>
   </body>
