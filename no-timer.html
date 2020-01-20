@@ -202,10 +202,7 @@
                 !disabled && (mainText || subText),
             )
 
-          // FIXME sort algorithm
-          // https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb
-          const shuffled = [...parsed].sort(() => Math.random() - 0.5)
-          setQuestions(shuffled)
+          setQuestions(shuffle(parsed))
         }
         useEffect(() => {
           loadQuestions()
@@ -390,6 +387,20 @@
             setTimeout(() => resolve(stubData), 1000)
           }
         })
+      }
+
+      // https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb
+      function shuffle(array) {
+        const target = [...array]
+
+        for (let i = target.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * i)
+          const temp = target[i]
+          target[i] = target[j]
+          target[j] = temp
+        }
+
+        return target
       }
     </script>
   </body>
