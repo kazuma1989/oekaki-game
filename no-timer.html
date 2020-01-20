@@ -54,18 +54,43 @@
         filter: opacity(0.5);
       }
 
-      /* App */
+      /* Views */
+      .opening-view {
+        display: grid;
+        grid-template:
+          'title' 20%
+          'button_1' auto
+          'button_2' auto
+          'button_primary' 25%
+          / auto;
+        gap: 5vw 0;
+        justify-content: center;
+        align-content: center;
+        align-items: end;
+      }
+      .opening-view-title {
+        align-self: start;
+      }
+      .opening-view-start-button {
+        padding: 4vw;
+      }
+
       .game-view {
         display: grid;
         grid-template:
-          'timer timer' 15%
-          'card card' auto
+          'header header' 15%
+          'question question' auto
           'button-pass button-next' 20%
           / 50% 50%;
       }
-
-      .card {
-        grid-area: card;
+      .game-view-header {
+        grid-area: header;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .game-view-question {
+        grid-area: question;
 
         padding: 3vw;
 
@@ -74,30 +99,18 @@
         justify-content: center;
         align-items: center;
       }
-      .card-main-text {
+      .game-view-question-main {
         text-align: center;
         font-size: 15vw;
         color: rgba(0, 0, 0, 0.8);
       }
-      .card-sub-text {
+      .game-view-question-sub {
         text-align: center;
         font-size: 7vw;
         color: rgba(0, 0, 0, 0.5);
       }
-
-      .opening-view {
-        display: grid;
-        grid-template-rows: auto auto auto 25%;
-        justify-content: center;
-        align-content: center;
-        align-items: end;
-      }
-      .opening-view-value {
-        text-align: center;
-        font-size: 20vw;
-      }
-      .opening-view-start-button {
-        padding: 4vw;
+      .game-view-button {
+        margin: 2vw;
       }
 
       .result-view-label {
@@ -142,7 +155,7 @@
         const nextQuestion = () => setNextCount(v => v + 1)
 
         const [questions, setQuestions] = useState(null)
-        const loading = !questions
+        const loading = questions === null
         const loadQuestions = async () => {
           setQuestions(null)
 
@@ -211,17 +224,19 @@
       }) {
         return (
           <div className="opening-view fullscreen base-font">
+            <div className="opening-view-title">お絵かき お題当て</div>
+
             <Button
               label={loading ? 'ロード中...' : 'お題リロード'}
               disabled={loading}
               onClick={onReload}
             />
-
             <Button
               label="チュートリアル"
               disabled={loading}
               onClick={onStartTutorial}
             />
+
             <Button
               className="opening-view-start-button button-primary"
               label="ゲーム開始！"
@@ -241,25 +256,37 @@
         onShowResult,
       }) {
         const index = passCount + nextCount
-        const questionsLeft = questions.length - index - 1
-        const { mainText, subText } =
-          questions[
-            index <= questions.length - 1 ? index : questions.length - 1
-          ] || {}
+        const questionsLeft = questions.length - index
+        const finished = questionsLeft === 0
+        const { mainText, subText } = questions[index] || {}
 
         return (
-          <div className="game-view fullscreen">
-            <div>{questionsLeft}</div>
+          <div className="game-view fullscreen base-font">
+            <div className="game-view-header">残り {questionsLeft} 問</div>
 
-            <div className="card base-font">
-              <span className="card-main-text">{mainText}</span>
-              <span className="card-sub-text">{subText}</span>
-            </div>
+            {!finished ? (
+              <div className="game-view-question">
+                <span className="game-view-question-main">{mainText}</span>
+                <span className="game-view-question-sub">{subText}</span>
+              </div>
+            ) : (
+              <div className="game-view-question">
+                <span className="game-view-question-sub">
+                  お題がありません！
+                </span>
+              </div>
+            )}
 
-            <Button label="パス" onClick={onPassQuestion} />
             <Button
-              className="button-primary"
+              className="game-view-button"
+              label="パス"
+              disabled={finished}
+              onClick={onPassQuestion}
+            />
+            <Button
+              className="game-view-button button-primary"
               label="次へ"
+              disabled={finished}
               onClick={onNextQuestion}
             />
           </div>
