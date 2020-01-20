@@ -7,7 +7,8 @@ function doGet() {
 }
 
 function getValues() {
-  return SpreadsheetApp.getActiveSheet()
+  return SpreadsheetApp.getActive()
+    .getSheetByName('お題')
     .getDataRange()
     .getValues()
 }
