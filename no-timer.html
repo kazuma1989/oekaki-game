@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>お絵かき お題当て</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/ress@2.0.4/dist/ress.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c:900&display=swap&subset=japanese"
+    />
+
+    <style>
+      /* Base */
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+        touch-action: manipulation;
+      }
+
+      /* Utils */
+      .base-font {
+        font-family: 'M PLUS Rounded 1c', 'ヒラギノ角ゴ StdN W8', sans-serif;
+        font-size: 10vw;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .fullscreen {
+        width: 100%;
+        height: 100%;
+      }
+
+      .button {
+        padding: 2vw;
+
+        background-color: gainsboro;
+        border-radius: 2vw;
+
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .button-primary {
+        background-color: steelblue;
+        color: white;
+      }
+      .button:disabled {
+        filter: opacity(0.5);
+      }
+
+      /* App */
+      .game-view {
+        display: grid;
+        grid-template:
+          'timer timer' 15%
+          'card card' auto
+          'button-pass button-next' 20%
+          / 50% 50%;
+      }
+
+      .card {
+        grid-area: card;
+
+        padding: 3vw;
+
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center;
+      }
+      .card-main-text {
+        text-align: center;
+        font-size: 15vw;
+        color: rgba(0, 0, 0, 0.8);
+      }
+      .card-sub-text {
+        text-align: center;
+        font-size: 7vw;
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      .opening-view {
+        display: grid;
+        grid-template-rows: auto auto auto 25%;
+        justify-content: center;
+        align-content: center;
+        align-items: end;
+      }
+      .opening-view-value {
+        text-align: center;
+        font-size: 20vw;
+      }
+      .opening-view-start-button {
+        padding: 4vw;
+      }
+
+      .result-view-label {
+        color: red;
+        font-size: 20vw;
+        transform: rotateZ(-15deg) translateY(-10%);
+      }
+      .result-view-next-count {
+        text-align: right;
+      }
+      .result-view-pass-count {
+        text-align: right;
+      }
+    </style>
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+  </head>
+
+  <body>
+    <div id="root" class="fullscreen"></div>
+
+    <script type="text/babel">
+      const { React, ReactDOM } = window
+      const { useState, useEffect, useMemo } = React
+
+      ReactDOM.render(<App />, document.getElementById('root'))
+
+      function App() {
+        const [viewMode, setViewMode] = useState('opening')
+        // TODO チュートリアルモード実装
+        const startTutorial = () => console.log('tutorial')
+        const startGame = () => setViewMode('game')
+        const showResult = () => setViewMode('result')
+        const closeResult = () => setViewMode('game')
+        const resetGame = () => setViewMode('opening')
+
+        const [passCount, setPassCount] = useState(0)
+        const [nextCount, setNextCount] = useState(0)
+        const passQuestion = () => setPassCount(v => v + 1)
+        const nextQuestion = () => setNextCount(v => v + 1)
+
+        const [questions, setQuestions] = useState(null)
+        const loading = !questions
+        const loadQuestions = async () => {
+          setQuestions(null)
+
+          const sheetValues = await fetchSheetValues()
+          const parsed = sheetValues
+            .slice(1)
+            .map(([mainText, subText, disabled]) => ({
+              mainText,
+              subText,
+              disabled,
+            }))
+            .filter(
+              ({ mainText, subText, disabled }) =>
+                !disabled && (mainText || subText),
+            )
+
+          // FIXME sort algorithm
+          // https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb
+          const shuffled = [...parsed].sort(() => Math.random() - 0.5)
+          setQuestions(shuffled)
+        }
+        useEffect(() => {
+          loadQuestions()
+        }, [])
+
+        switch (viewMode) {
+          case 'opening':
+            return (
+              <OpeningView
+                loading={loading}
+                onReload={loadQuestions}
+                onStartTutorial={startTutorial}
+                onStartGame={startGame}
+              />
+            )
+
+          case 'game':
+            return (
+              <GameView
+                questions={questions}
+                passCount={passCount}
+                nextCount={nextCount}
+                onPassQuestion={passQuestion}
+                onNextQuestion={nextQuestion}
+                onShowResult={showResult}
+              />
+            )
+
+          case 'result':
+            return (
+              <ResultView
+                passCount={passCount}
+                nextCount={nextCount}
+                onClose={closeResult}
+                onReset={resetGame}
+              />
+            )
+        }
+      }
+
+      function OpeningView({
+        loading,
+        onReload,
+        onStartTutorial,
+        onStartGame,
+      }) {
+        return (
+          <div className="opening-view fullscreen base-font">
+            <Button
+              label={loading ? 'ロード中...' : 'お題リロード'}
+              disabled={loading}
+              onClick={onReload}
+            />
+
+            <Button
+              label="チュートリアル"
+              disabled={loading}
+              onClick={onStartTutorial}
+            />
+            <Button
+              className="opening-view-start-button button-primary"
+              label="ゲーム開始！"
+              disabled={loading}
+              onClick={onStartGame}
+            />
+          </div>
+        )
+      }
+
+      function GameView({
+        questions = [],
+        passCount,
+        nextCount,
+        onPassQuestion,
+        onNextQuestion,
+        onShowResult,
+      }) {
+        const index = passCount + nextCount
+        const questionsLeft = questions.length - index - 1
+        const { mainText, subText } =
+          questions[
+            index <= questions.length - 1 ? index : questions.length - 1
+          ] || {}
+
+        return (
+          <div className="game-view fullscreen">
+            <div>{questionsLeft}</div>
+
+            <div className="card base-font">
+              <span className="card-main-text">{mainText}</span>
+              <span className="card-sub-text">{subText}</span>
+            </div>
+
+            <Button label="パス" onClick={onPassQuestion} />
+            <Button
+              className="button-primary"
+              label="次へ"
+              onClick={onNextQuestion}
+            />
+          </div>
+        )
+      }
+
+      function ResultView({ passCount, nextCount }) {
+        return (
+          <div className="result-view base-font">
+            <div className="result-view-label">終了〜</div>
+
+            <div className="result-view-next-count">
+              クリア {nextCount} 回！
+            </div>
+            <div className="result-view-pass-count">パス {passCount} 回！</div>
+          </div>
+        )
+      }
+
+      function Button({ label, onClick, className = '', disabled }) {
+        return (
+          <button
+            type="button"
+            disabled={disabled}
+            className={`button base-font ${className}`}
+            onClick={onClick}
+          >
+            {label}
+          </button>
+        )
+      }
+    </script>
+
+    <script>
+      function fetchSheetValues() {
+        return new Promise((resolve, reject) => {
+          if (window.google) {
+            const timerId = setTimeout(reject, 5000)
+
+            google.script.run
+              .withSuccessHandler(values => {
+                resolve(values)
+                clearTimeout(timerId)
+              })
+              .getValues()
+          } else {
+            const stubData = [
+              ['ヘッダー', '', ''],
+              ['どらえもん', 'みんなのお友達だよ！！！', ''],
+              ['プーさん', '', ''],
+              ['しゃっくり', '', ''],
+            ]
+
+            setTimeout(() => resolve(stubData), 1000)
+          }
+        })
+      }
+    </script>
+  </body>
+</html>
