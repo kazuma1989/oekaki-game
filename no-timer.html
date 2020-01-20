@@ -161,17 +161,24 @@
 
     <script type="text/babel">
       const { React, ReactDOM } = window
-      const { useState, useEffect, useMemo } = React
+      const { useState, useEffect } = React
 
       ReactDOM.render(<App />, document.getElementById('root'))
 
       function App() {
         const [viewMode, setViewMode] = useState('opening')
-        // TODO チュートリアルモード実装
-        const startTutorial = () => console.log('tutorial')
-        const startGame = () => setViewMode('game')
         const showResult = () => setViewMode('result')
         const closeResult = () => setViewMode('game')
+
+        const [tutorial, setTutorial] = useState(false)
+        const startGame = () => {
+          setTutorial(false)
+          setViewMode('game')
+        }
+        const startTutorial = () => {
+          setTutorial(true)
+          setViewMode('game')
+        }
 
         const [passCount, setPassCount] = useState(0)
         const [nextCount, setNextCount] = useState(0)
@@ -184,25 +191,29 @@
           setViewMode('opening')
         }
 
-        const [questions, setQuestions] = useState(null)
-        const loading = questions === null
+        const [rawQuestions, setRawQuestions] = useState(null)
+        const questions = rawQuestions
+          ? rawQuestions.filter(q => q.forTutorial === tutorial)
+          : []
+        const loading = rawQuestions === null
         const loadQuestions = async () => {
-          setQuestions(null)
+          setRawQuestions(null)
 
           const sheetValues = await fetchSheetValues()
           const parsed = sheetValues
             .slice(1)
-            .map(([mainText, subText, disabled]) => ({
+            .map(([mainText, subText, forTutorial, disabled]) => ({
               mainText,
               subText,
-              disabled,
+              forTutorial: Boolean(forTutorial),
+              disabled: Boolean(disabled),
             }))
             .filter(
               ({ mainText, subText, disabled }) =>
                 !disabled && (mainText || subText),
             )
 
-          setQuestions(shuffle(parsed))
+          setRawQuestions(shuffle(parsed))
         }
         useEffect(() => {
           loadQuestions()
@@ -378,10 +389,14 @@
               .getValues()
           } else {
             const stubData = [
-              ['ヘッダー', '', ''],
-              ['どらえもん', 'みんなのお友達だよ！！！', ''],
-              ['プーさん', '', ''],
-              ['しゃっくり', '', ''],
+              ['ヘッダー', '', '', ''],
+              ['チュートリアル 1', '', true, ''],
+              ['チュートリアル 2', '', true, ''],
+              ['チュートリアル 3', '', true, ''],
+              ['ドラえもん', '', '', ''],
+              ['プーさん', '', '', ''],
+              ['キティちゃん', '', '', ''],
+              ['ミッキーマウス', 'みんなのお友達だよ！！！ハハッ！！', '', ''],
             ]
 
             setTimeout(() => resolve(stubData), 1000)
