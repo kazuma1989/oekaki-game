@@ -35,7 +35,7 @@
         height: 100%;
       }
 
-      .game {
+      .game-view {
         display: grid;
         grid-template:
           'timer timer' 15%
@@ -79,6 +79,21 @@
         color: rgba(0, 0, 0, 0.5);
       }
 
+      .config-view {
+        display: grid;
+        grid-template-rows: auto auto auto 25%;
+        justify-content: center;
+        align-content: center;
+        align-items: end;
+      }
+      .config-view-value {
+        text-align: center;
+        font-size: 20vw;
+      }
+      .config-view-start-button {
+        padding: 4vw;
+      }
+
       .button {
         margin: 2vw;
 
@@ -104,19 +119,6 @@
         flex-flow: column nowrap;
         justify-content: center;
         align-items: center;
-      }
-
-      .config-dialog {
-        display: flex;
-        flex-flow: column nowrap;
-      }
-      .config-dialog-value {
-        text-align: center;
-        font-size: 20vw;
-      }
-      .config-dialog-start-button {
-        padding: 4vw;
-        margin-top: 8vw;
       }
 
       .result-dialog-label {
@@ -157,14 +159,10 @@
 
         return (
           <div className="app fullscreen">
-            {!configMode && (
-              <Game limitSecond={limitSecond} onFinish={setResult} />
-            )}
-
-            {configMode && (
-              <Overlay>
-                <ConfigDialog onFinish={setConfig} />
-              </Overlay>
+            {configMode ? (
+              <ConfigView onFinish={setConfig} />
+            ) : (
+              <GameView limitSecond={limitSecond} onFinish={setResult} />
             )}
 
             {finished && (
@@ -176,7 +174,7 @@
         )
       }
 
-      function Game({ limitSecond, onFinish }) {
+      function GameView({ limitSecond, onFinish }) {
         const [shuffled, setShuffled] = useState(null)
         useEffect(() => {
           fetchSheetValues().then(sheetValues => {
@@ -227,7 +225,7 @@
         }
 
         return (
-          <div className="game fullscreen">
+          <div className="game-view fullscreen">
             <Timer
               limitSecond={limitSecond}
               onFinish={finishTimer}
@@ -286,7 +284,7 @@
         return <div className="overlay fullscreen">{children}</div>
       }
 
-      function ConfigDialog({ onFinish }) {
+      function ConfigView({ onFinish }) {
         const [limitSecond, setLimitSecond] = useState(300)
         const increment = () =>
           setLimitSecond(currentValue => {
@@ -302,15 +300,13 @@
         const startGame = () => onFinish({ limitSecond })
 
         return (
-          <div className="config-dialog base-font">
+          <div className="config-view fullscreen base-font">
             <Button label="+" onClick={increment} />
-            <div className="config-dialog-value">
-              {toTimeString(limitSecond)}
-            </div>
+            <div className="config-view-value">{toTimeString(limitSecond)}</div>
             <Button label="-" onClick={decrement} />
 
             <Button
-              className="config-dialog-start-button button-primary"
+              className="config-view-start-button button-primary"
               label="ゲーム開始！"
               onClick={startGame}
             />
