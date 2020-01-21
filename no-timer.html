@@ -203,14 +203,23 @@
           setViewMode('game')
         }
 
+        const [questionState, setQuestionState] = useState('drawing')
         const [passCount, setPassCount] = useState(0)
-        const [nextCount, setNextCount] = useState(0)
-        const passQuestion = () => setPassCount(v => v + 1)
-        const nextQuestion = () => setNextCount(v => v + 1)
+        const [correctCount, setCorrectCount] = useState(0)
+        const passQuestion = () => {
+          setQuestionState('passed')
+          setPassCount(v => v + 1)
+        }
+        const correctQuestion = () => {
+          setQuestionState('correct')
+          setCorrectCount(v => v + 1)
+        }
+        const goToNextQuestion = () => setQuestionState('drawing')
 
         const resetGame = () => {
+          setQuestionState('drawing')
           setPassCount(0)
-          setNextCount(0)
+          setCorrectCount(0)
           setViewMode('opening')
         }
 
@@ -257,10 +266,12 @@
             return (
               <GameView
                 questions={questions}
+                questionState={questionState}
                 passCount={passCount}
-                nextCount={nextCount}
+                correctCount={correctCount}
                 onPassQuestion={passQuestion}
-                onNextQuestion={nextQuestion}
+                onCorrectQuestion={correctQuestion}
+                onNextQuestion={goToNextQuestion}
                 onShowResult={showResult}
               />
             )
@@ -269,7 +280,7 @@
             return (
               <ResultView
                 passCount={passCount}
-                nextCount={nextCount}
+                correctCount={correctCount}
                 onClose={closeResult}
                 onReset={resetGame}
               />
@@ -310,30 +321,19 @@
 
       function GameView({
         questions = [],
+        questionState,
         passCount,
-        nextCount,
+        correctCount,
         onPassQuestion,
+        onCorrectQuestion,
         onNextQuestion,
         onShowResult,
       }) {
-        const [questionState, setQuestionState] = useState('drawing')
-        const passQuestion = () => setQuestionState('passed')
-        const correctQuestion = () => setQuestionState('correct')
-        const showNextQuestion = () => {
-          setQuestionState('drawing')
+        const index =
+          questionState === 'drawing'
+            ? passCount + correctCount
+            : passCount + correctCount - 1
 
-          switch (questionState) {
-            case 'passed':
-              onPassQuestion()
-              break
-
-            case 'correct':
-              onNextQuestion()
-              break
-          }
-        }
-
-        const index = passCount + nextCount
         const questionsLeft = questions.length - index
         const finished = questionsLeft === 0
         const { mainText, subText } = questions[index] || {}
@@ -381,13 +381,13 @@
                   className="game-view-button"
                   label="パス"
                   disabled={finished}
-                  onClick={passQuestion}
+                  onClick={onPassQuestion}
                 />
                 <Button
                   className="game-view-button button-primary"
                   label="正解!"
                   disabled={finished}
-                  onClick={correctQuestion}
+                  onClick={onCorrectQuestion}
                 />
               </>
             ) : (
@@ -395,14 +395,14 @@
                 className="game-view-button game-view-button-wide button-primary"
                 label="次のお題を表示"
                 disabled={finished}
-                onClick={showNextQuestion}
+                onClick={onNextQuestion}
               />
             )}
           </div>
         )
       }
 
-      function ResultView({ passCount, nextCount, onClose, onReset }) {
+      function ResultView({ passCount, correctCount, onClose, onReset }) {
         return (
           <div className="result-view fullscreen base-font">
             <Button
@@ -413,7 +413,7 @@
 
             <div className="result-view-label">結果</div>
 
-            <div className="result-view-count">正解 {nextCount} 回！</div>
+            <div className="result-view-count">正解 {correctCount} 回！</div>
             <div className="result-view-count">パス {passCount} 回！</div>
 
             <Button
