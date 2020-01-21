@@ -336,7 +336,13 @@
 
         const questionsLeft = questions.length - index
         const finished = questionsLeft === 0
-        const { mainText, subText } = questions[index] || {}
+
+        let { mainText = '', subText = '' } = questions[index] || {}
+        // お題をマスクして隠す
+        if (questionState === 'passed') {
+          mainText = '＊'.repeat(mainText.length)
+          subText = '＊'.repeat(subText.length)
+        }
 
         return (
           <div className="game-view fullscreen base-font">
@@ -351,12 +357,8 @@
 
             {!finished ? (
               <div className="game-view-question">
-                {questionState !== 'passed' && (
-                  <>
-                    <span className="game-view-question-main">{mainText}</span>
-                    <span className="game-view-question-sub">{subText}</span>
-                  </>
-                )}
+                <span className="game-view-question-main">{mainText}</span>
+                <span className="game-view-question-sub">{subText}</span>
 
                 {questionState === 'passed' && (
                   <span className="game-view-question-result">パス</span>
