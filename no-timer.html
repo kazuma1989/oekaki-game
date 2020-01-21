@@ -84,7 +84,7 @@
         grid-template:
           'header header' 15%
           'question question' auto
-          'button-pass button-next' 20%
+          'button button' 20%
           / 50% 50%;
       }
       .game-view-header {
@@ -116,8 +116,31 @@
         font-size: 7vw;
         color: rgba(0, 0, 0, 0.5);
       }
+      .game-view-question-result {
+        position: absolute;
+        z-index: -1;
+
+        border: solid 3vw;
+        width: 90vw;
+        height: 90vw;
+
+        border-radius: 50%;
+        transform: rotate(-25deg);
+
+        font-size: 25vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .game-view-question-result-correct {
+        color: crimson;
+        filter: opacity(0.5);
+      }
       .game-view-button {
         margin: 2vw;
+      }
+      .game-view-button-wide {
+        grid-area: button;
       }
 
       .result-view {
@@ -293,6 +316,23 @@
         onNextQuestion,
         onShowResult,
       }) {
+        const [questionState, setQuestionState] = useState('drawing')
+        const passQuestion = () => setQuestionState('passed')
+        const correctQuestion = () => setQuestionState('correct')
+        const showNextQuestion = () => {
+          setQuestionState('drawing')
+
+          switch (questionState) {
+            case 'passed':
+              onPassQuestion()
+              break
+
+            case 'correct':
+              onNextQuestion()
+              break
+          }
+        }
+
         const index = passCount + nextCount
         const questionsLeft = questions.length - index
         const finished = questionsLeft === 0
@@ -311,8 +351,21 @@
 
             {!finished ? (
               <div className="game-view-question">
-                <span className="game-view-question-main">{mainText}</span>
-                <span className="game-view-question-sub">{subText}</span>
+                {questionState !== 'passed' && (
+                  <>
+                    <span className="game-view-question-main">{mainText}</span>
+                    <span className="game-view-question-sub">{subText}</span>
+                  </>
+                )}
+
+                {questionState === 'passed' && (
+                  <span className="game-view-question-result">パス</span>
+                )}
+                {questionState === 'correct' && (
+                  <span className="game-view-question-result game-view-question-result-correct">
+                    正解!
+                  </span>
+                )}
               </div>
             ) : (
               <div className="game-view-question">
@@ -322,18 +375,29 @@
               </div>
             )}
 
-            <Button
-              className="game-view-button"
-              label="パス"
-              disabled={finished}
-              onClick={onPassQuestion}
-            />
-            <Button
-              className="game-view-button button-primary"
-              label="正解！次のお題へ"
-              disabled={finished}
-              onClick={onNextQuestion}
-            />
+            {questionState === 'drawing' ? (
+              <>
+                <Button
+                  className="game-view-button"
+                  label="パス"
+                  disabled={finished}
+                  onClick={passQuestion}
+                />
+                <Button
+                  className="game-view-button button-primary"
+                  label="正解!"
+                  disabled={finished}
+                  onClick={correctQuestion}
+                />
+              </>
+            ) : (
+              <Button
+                className="game-view-button game-view-button-wide button-primary"
+                label="次のお題を表示"
+                disabled={finished}
+                onClick={showNextQuestion}
+              />
+            )}
           </div>
         )
       }
