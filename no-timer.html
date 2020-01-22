@@ -432,24 +432,63 @@
         )
       }
 
-      function CanvasView({ onClose }) {
+      function CanvasView() {
         const ctxRef = useRef(null)
-        const ctx = ctxRef.current
-        console.log(ctx)
+        const [drawing, setDrawing] = useState(false)
+        const startDrawing = (x, y) => {
+          const ctx = ctxRef.current
+          if (!ctx) return
+
+          setDrawing(true)
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+        }
+        const draw = (x, y) => {
+          if (!drawing) return
+
+          const ctx = ctxRef.current
+          if (!ctx) return
+
+          ctx.lineTo(x, y)
+          ctx.stroke()
+        }
+        const finishDrawing = () => {
+          setDrawing(false)
+        }
+        const clearAll = () => {
+          const ctx = ctxRef.current
+          if (!ctx) return
+
+          const { width, height } = ctx.canvas
+          ctx.clearRect(0, 0, width, height)
+        }
 
         return (
           <div className="canvas-view fullscreen base-font">
             <Button
               className="button-close"
               label="&#x1F4A3;"
-              onClick={onClose}
+              onClick={clearAll}
             />
 
             <div className="canvas-view-canvas">
               <canvas
-                ref={canvas =>
-                  (ctxRef.current = canvas && canvas.getContext('2d'))
+                ref={canvas => {
+                  if (!canvas || ctxRef.current) return
+
+                  ctxRef.current = canvas.getContext('2d')
+
+                  canvas.width = canvas.parentElement.offsetWidth
+                  canvas.height = canvas.parentElement.offsetHeight
+                }}
+                onMouseDown={e =>
+                  startDrawing(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
                 }
+                onMouseMove={e =>
+                  draw(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
+                }
+                onMouseUp={finishDrawing}
+                onMouseLeave={finishDrawing}
               />
             </div>
 
