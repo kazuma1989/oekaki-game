@@ -84,15 +84,18 @@
       .game-view {
         display: grid;
         grid-template:
-          'header header' 15%
+          'header header' 13%
           'question question' auto
-          'button button' 20%
+          'button button' 15%
           / 50% 50%;
       }
       .game-view-header {
         grid-area: header;
+
+        margin: 2vw 2vw 0 4vw;
+
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
       }
       .game-view-header-button {
@@ -101,7 +104,7 @@
       .game-view-question {
         grid-area: question;
 
-        padding: 3vw;
+        margin: 2vw 0;
 
         display: flex;
         flex-flow: column nowrap;
@@ -139,7 +142,8 @@
         filter: opacity(0.5);
       }
       .game-view-button {
-        margin: 2vw;
+        margin: 0 2vw 2vw 2vw;
+        padding: 0;
       }
       .game-view-button-wide {
         grid-area: button;
@@ -160,15 +164,15 @@
       }
       .result-view-close-button {
         position: fixed;
-        top: 5vw;
-        right: 5vw;
+        top: 2vw;
+        right: 2vw;
         z-index: 10;
         line-height: 1;
         width: 16vw;
         height: 16vw;
       }
       .result-view-label {
-        font-size: 20vw;
+        font-size: 18vw;
         text-align: center;
       }
       .result-view-count {
@@ -313,7 +317,7 @@
 
             <Button
               className="opening-view-start-button button-primary"
-              label="ゲーム開始！"
+              label="ゲーム開始!"
               disabled={loading}
               onClick={onStartGame}
             />
@@ -374,7 +378,7 @@
             ) : (
               <div className="game-view-question">
                 <span className="game-view-question-sub">
-                  お題がありません！
+                  お題がありません!
                 </span>
               </div>
             )}
@@ -464,7 +468,7 @@
               ['ドラえもん', '', '', ''],
               ['プーさん', '', '', ''],
               ['キティちゃん', '', '', ''],
-              ['ミッキーマウス', 'みんなのお友達だよ！！！ハハッ！！', '', ''],
+              ['ミッキーマウス', 'みんなのお友達だよ!!!ハハッ!!', '', ''],
             ]
 
             setTimeout(() => resolve(stubData), 1000)
