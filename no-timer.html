@@ -211,7 +211,7 @@
 
     <script type="text/babel">
       const { React, ReactDOM } = window
-      const { useState, useEffect } = React
+      const { useState, useEffect, useRef } = React
 
       ReactDOM.render(<App />, document.getElementById('root'))
 
@@ -433,6 +433,10 @@
       }
 
       function CanvasView({ onClose }) {
+        const ctxRef = useRef(null)
+        const ctx = ctxRef.current
+        console.log(ctx)
+
         return (
           <div className="canvas-view fullscreen base-font">
             <Button
@@ -442,7 +446,11 @@
             />
 
             <div className="canvas-view-canvas">
-              <canvas />
+              <canvas
+                ref={canvas =>
+                  (ctxRef.current = canvas && canvas.getContext('2d'))
+                }
+              />
             </div>
 
             <Button className="canvas-view-button" label="パス" />
