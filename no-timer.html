@@ -59,6 +59,15 @@
       .button:disabled {
         filter: opacity(0.5);
       }
+      .button-close {
+        position: fixed;
+        top: 2vw;
+        right: 2vw;
+        z-index: 10;
+        line-height: 1;
+        width: 16vw;
+        height: 16vw;
+      }
 
       /* Views */
       .opening-view {
@@ -149,6 +158,27 @@
         grid-area: button;
       }
 
+      .canvas-view {
+        display: grid;
+        grid-template:
+          'canvas canvas' auto
+          'button button' 15%
+          / 50% 50%;
+      }
+      .canvas-view-canvas {
+        grid-area: canvas;
+
+        margin: 2vw 0;
+      }
+      .canvas-view-canvas > canvas {
+        width: 100%;
+        height: 100%;
+      }
+      .canvas-view-button {
+        margin: 0 2vw 2vw 2vw;
+        padding: 0;
+      }
+
       .result-view {
         display: grid;
         grid-template:
@@ -161,15 +191,6 @@
         justify-content: center;
         align-content: center;
         align-items: end;
-      }
-      .result-view-close-button {
-        position: fixed;
-        top: 2vw;
-        right: 2vw;
-        z-index: 10;
-        line-height: 1;
-        width: 16vw;
-        height: 16vw;
       }
       .result-view-label {
         font-size: 18vw;
@@ -259,14 +280,15 @@
 
         switch (viewMode) {
           case 'opening':
-            return (
-              <OpeningView
-                loading={loading}
-                onReload={loadQuestions}
-                onStartTutorial={startTutorial}
-                onStartGame={startGame}
-              />
-            )
+            // return (
+            //   <OpeningView
+            //     loading={loading}
+            //     onReload={loadQuestions}
+            //     onStartTutorial={startTutorial}
+            //     onStartGame={startGame}
+            //   />
+            // )
+            return <CanvasView />
 
           case 'game':
             return (
@@ -410,11 +432,33 @@
         )
       }
 
+      function CanvasView({ onClose }) {
+        return (
+          <div className="canvas-view fullscreen base-font">
+            <Button
+              className="button-close"
+              label="&#x1F4A3;"
+              onClick={onClose}
+            />
+
+            <div className="canvas-view-canvas">
+              <canvas />
+            </div>
+
+            <Button className="canvas-view-button" label="パス" />
+            <Button
+              className="canvas-view-button button-primary"
+              label="正解!"
+            />
+          </div>
+        )
+      }
+
       function ResultView({ passCount, correctCount, onClose, onReset }) {
         return (
           <div className="result-view fullscreen base-font">
             <Button
-              className="result-view-close-button"
+              className="button-close"
               label="&times;"
               onClick={onClose}
             />
