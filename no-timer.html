@@ -151,11 +151,10 @@
         filter: opacity(0.5);
       }
       .game-view-button {
+        grid-area: button;
+
         margin: 0 2vw 2vw 2vw;
         padding: 0;
-      }
-      .game-view-button-wide {
-        grid-area: button;
       }
 
       .canvas-view {
@@ -219,6 +218,7 @@
         const [viewMode, setViewMode] = useState('opening')
         const showResult = () => setViewMode('result')
         const closeResult = () => setViewMode('game')
+        const startDrawing = () => setViewMode('canvas')
 
         const [tutorial, setTutorial] = useState(false)
         const startGame = () => {
@@ -234,20 +234,22 @@
         const [passCount, setPassCount] = useState(0)
         const [correctCount, setCorrectCount] = useState(0)
         const passQuestion = () => {
+          setViewMode('game')
           setQuestionState('passed')
           setPassCount(v => v + 1)
         }
         const correctQuestion = () => {
+          setViewMode('game')
           setQuestionState('correct')
           setCorrectCount(v => v + 1)
         }
         const goToNextQuestion = () => setQuestionState('drawing')
 
         const resetGame = () => {
+          setViewMode('opening')
           setQuestionState('drawing')
           setPassCount(0)
           setCorrectCount(0)
-          setViewMode('opening')
         }
 
         const [rawQuestions, setRawQuestions] = useState(null)
@@ -280,15 +282,14 @@
 
         switch (viewMode) {
           case 'opening':
-            // return (
-            //   <OpeningView
-            //     loading={loading}
-            //     onReload={loadQuestions}
-            //     onStartTutorial={startTutorial}
-            //     onStartGame={startGame}
-            //   />
-            // )
-            return <CanvasView />
+            return (
+              <OpeningView
+                loading={loading}
+                onReload={loadQuestions}
+                onStartTutorial={startTutorial}
+                onStartGame={startGame}
+              />
+            )
 
           case 'game':
             return (
@@ -297,10 +298,17 @@
                 questionState={questionState}
                 passCount={passCount}
                 correctCount={correctCount}
-                onPassQuestion={passQuestion}
-                onCorrectQuestion={correctQuestion}
+                onStartDrawing={startDrawing}
                 onNextQuestion={goToNextQuestion}
                 onShowResult={showResult}
+              />
+            )
+
+          case 'canvas':
+            return (
+              <CanvasView
+                onPassQuestion={passQuestion}
+                onCorrectQuestion={correctQuestion}
               />
             )
 
@@ -313,6 +321,9 @@
                 onReset={resetGame}
               />
             )
+
+          default:
+            return <div>ERROR</div>
         }
       }
 
@@ -352,8 +363,7 @@
         questionState,
         passCount,
         correctCount,
-        onPassQuestion,
-        onCorrectQuestion,
+        onStartDrawing,
         onNextQuestion,
         onShowResult,
       }) {
@@ -406,23 +416,15 @@
             )}
 
             {questionState === 'drawing' ? (
-              <>
-                <Button
-                  className="game-view-button"
-                  label="パス"
-                  disabled={finished}
-                  onClick={onPassQuestion}
-                />
-                <Button
-                  className="game-view-button button-primary"
-                  label="正解!"
-                  disabled={finished}
-                  onClick={onCorrectQuestion}
-                />
-              </>
+              <Button
+                className="game-view-button button-primary"
+                label="絵を描く"
+                disabled={finished}
+                onClick={onStartDrawing}
+              />
             ) : (
               <Button
-                className="game-view-button game-view-button-wide button-primary"
+                className="game-view-button button-primary"
                 label="次のお題を表示"
                 disabled={finished}
                 onClick={onNextQuestion}
@@ -432,7 +434,7 @@
         )
       }
 
-      function CanvasView() {
+      function CanvasView({ onPassQuestion, onCorrectQuestion }) {
         const ctxRef = useRef(null)
         const [drawing, setDrawing] = useState(false)
         const startDrawing = (x, y) => {
@@ -492,10 +494,15 @@
               />
             </div>
 
-            <Button className="canvas-view-button" label="パス" />
+            <Button
+              className="canvas-view-button"
+              label="パス"
+              onClick={onPassQuestion}
+            />
             <Button
               className="canvas-view-button button-primary"
               label="正解!"
+              onClick={onCorrectQuestion}
             />
           </div>
         )
