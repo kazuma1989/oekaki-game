@@ -23,7 +23,7 @@
         height: 100%;
         overflow: hidden;
         touch-action: manipulation;
-        /* ↓あんまり意味なさそう */
+        /* ↓ iframe 内＝GAS 公開だと意味なさそう */
         overscroll-behavior: none;
       }
 
@@ -417,8 +417,8 @@
 
             <div className="result-view-label">結果</div>
 
-            <div className="result-view-count">正解 {correctCount} 回！</div>
-            <div className="result-view-count">パス {passCount} 回！</div>
+            <div className="result-view-count">正解 {correctCount} 回!</div>
+            <div className="result-view-count">パス {passCount} 回!</div>
 
             <Button
               className="button-danger"
@@ -486,15 +486,19 @@
         return target
       }
 
-      // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
-      window.addEventListener('beforeunload', event => {
-        console.log('beforeunload')
-        event.preventDefault()
-        // Chrome requires returnValue to be set.
-        // が、とくに設定した文字が表示されるわけでもない
-        event.returnValue =
-          'このサイトを離れてもよろしいですか？行った変更が保存されない可能性があります。'
-      })
+      if (!['127.0.0.1', 'localhost'].includes(location.hostname)) {
+        // Cross origin の iframe 内だと無効にされる → GAS で公開していると無効
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
+        window.addEventListener('beforeunload', event => {
+          console.log('beforeunload')
+
+          event.preventDefault()
+          // Chrome requires returnValue to be set.
+          // が、とくに設定した文字が表示されるわけでもない
+          event.returnValue =
+            'このサイトを離れてもよろしいですか？行った変更が保存されない可能性があります。'
+        })
+      }
     </script>
   </body>
 </html>
