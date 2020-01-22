@@ -163,15 +163,18 @@
           'canvas canvas' auto
           'button button' 15%
           / 50% 50%;
+        gap: 2vw 0;
       }
       .canvas-view-canvas {
         grid-area: canvas;
-
-        margin: 2vw 0;
       }
       .canvas-view-canvas > canvas {
         width: 100%;
         height: 100%;
+        display: block;
+
+        user-select: none;
+        -webkit-user-select: none;
       }
       .canvas-view-button {
         margin: 0 2vw 2vw 2vw;
@@ -480,8 +483,8 @@
 
                   ctxRef.current = canvas.getContext('2d')
 
-                  canvas.width = canvas.parentElement.offsetWidth
-                  canvas.height = canvas.parentElement.offsetHeight
+                  canvas.width = canvas.offsetWidth
+                  canvas.height = canvas.offsetHeight
                 }}
                 onMouseDown={e =>
                   startDrawing(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
@@ -491,6 +494,28 @@
                 }
                 onMouseUp={finishDrawing}
                 onMouseLeave={finishDrawing}
+                onTouchStart={e => {
+                  e.preventDefault()
+
+                  const { touches } = e.nativeEvent
+                  if (touches.length !== 1) return
+
+                  const [touch] = touches
+                  // FIXME 雑な座標取得
+                  startDrawing(touch.clientX, touch.clientY)
+                }}
+                onTouchMove={e => {
+                  e.preventDefault()
+
+                  const { touches } = e.nativeEvent
+                  if (touches.length !== 1) return
+
+                  const [touch] = touches
+                  // FIXME 雑な座標取得
+                  draw(touch.clientX, touch.clientY)
+                }}
+                onTouchEnd={finishDrawing}
+                onTouchCancel={finishDrawing}
               />
             </div>
 
