@@ -14,7 +14,7 @@ export default function OpeningView({
 }) {
   return (
     <div class={style}>
-      <div class="title">お絵かき お題当て</div>
+      <div class={styleTitle}>お絵かき お題当て</div>
 
       <Button
         label={loading ? 'ロード中...' : 'お題リロード'}
@@ -28,7 +28,7 @@ export default function OpeningView({
       />
 
       <Button
-        class="button"
+        class={styleButton}
         theme="primary"
         label="ゲーム開始!"
         disabled={loading}
@@ -53,12 +53,12 @@ const style = css`
   justify-content: center;
   align-content: center;
   align-items: end;
+`
 
-  > .title {
-    align-self: start;
-  }
+const styleTitle = css`
+  align-self: start;
+`
 
-  > .button {
-    padding: 4vw;
-  }
+const styleButton = css`
+  padding: 4vw;
 `

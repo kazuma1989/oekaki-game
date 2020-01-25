@@ -1,13 +1,15 @@
 import css from 'https://unpkg.com/csz'
 
+type Theme = 'default' | 'primary' | 'danger'
+
 export default function Button({
-  theme,
+  theme = 'default',
   label,
   disabled,
   onClick,
   class: className = '',
 }: {
-  theme?: 'default' | 'primary' | 'danger'
+  theme?: Theme
   label?: string
   disabled?: boolean
   onClick?(): void
@@ -15,7 +17,7 @@ export default function Button({
 }) {
   return (
     <button
-      class={`${style} ${theme} ${className}`}
+      class={`${style} ${themes[theme]} ${className}`}
       type="button"
       disabled={disabled}
       onClick={onClick}
@@ -35,14 +37,16 @@ const style = css`
   &:disabled {
     filter: opacity(0.5);
   }
+`
 
-  &.primary {
+const themes: Record<Theme, string> = {
+  default: '',
+  primary: css`
     background-color: var(--cyanBlue10);
     color: var(--white);
-  }
-
-  &.danger {
+  `,
+  danger: css`
     background-color: var(--red10);
     color: var(--white);
-  }
-`
+  `,
+}
