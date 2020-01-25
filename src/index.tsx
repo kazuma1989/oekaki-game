@@ -1,4 +1,4 @@
-import { h, render } from '/web_modules/preact.js'
+import { render } from '/web_modules/preact.js'
 import { useState } from '/web_modules/preact/hooks.js'
 import css from 'https://unpkg.com/csz'
 

@@ -42,6 +42,10 @@
   <body class="full-height app-screen">
     <div id="root" class="full-height"></div>
 
+    <script type="module">
+      import { h } from '/web_modules/preact.js'
+      self.h = h
+    </script>
     <script type="module" src="/dist/index.js"></script>
   </body>
 </html>
