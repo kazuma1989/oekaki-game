@@ -23,6 +23,9 @@
       ]
     },
 
+    // Redirect output structure to the directory.
+    "outDir": "./public/dist",
+
     // Useful type checks.
     "strictNullChecks": true
   },

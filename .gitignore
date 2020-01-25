@@ -1,4 +1,4 @@
 node_modules/
 web_modules/
 
-/src/**/*.js
+/public/dist

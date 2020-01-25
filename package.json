@@ -5,9 +5,9 @@
   "author": "kazuma1989 <kazuma.ebina@quipper.com>",
   "license": "MIT",
   "scripts": {
-    "prepare": "snowpack",
+    "prepare": "snowpack --clean --dest ./public/web_modules/",
     "start": "concurrently npm:serve npm:tsc",
-    "serve": "servor --reload --browse",
+    "serve": "servor ./public --reload --browse",
     "tsc": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
