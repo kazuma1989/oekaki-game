@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja" class="full-height">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>お絵かき お題当て</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/ress@2.0.4/dist/ress.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c:900&display=swap&subset=japanese"
+    />
+
+    <style>
+      :root {
+        --black: rgba(0, 0, 0, 0.8);
+        --red: red;
+      }
+
+      :root {
+        font-family: 'M PLUS Rounded 1c', 'ヒラギノ角ゴ StdN W8', sans-serif;
+        font-size: min(10vw, 10vh);
+        color: var(--black);
+      }
+
+      .full-height {
+        height: 100%;
+      }
+
+      .app-screen {
+        overflow: hidden;
+        touch-action: manipulation;
+      }
+    </style>
+  </head>
+
+  <body class="full-height app-screen">
+    <div id="root" class="full-height"></div>
+
+    <script type="module" src="/src/index.js"></script>
+  </body>
+</html>

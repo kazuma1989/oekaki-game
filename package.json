@@ -1,0 +1,29 @@
+{
+  "name": "oekaki-game",
+  "version": "1.0.0",
+  "repository": "git@github.com:kazuma1989/oekaki-game.git",
+  "author": "kazuma1989 <kazuma.ebina@quipper.com>",
+  "license": "MIT",
+  "scripts": {
+    "prepare": "snowpack",
+    "start": "concurrently npm:serve npm:tsc",
+    "serve": "servor --reload --browse",
+    "tsc": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "preact": "^10.2.1"
+  },
+  "devDependencies": {
+    "concurrently": "^5.0.2",
+    "servor": "^3.1.0",
+    "snowpack": "^1.1.0",
+    "typescript": "^3.7.5"
+  },
+  "snowpack": {
+    "webDependencies": [
+      "preact",
+      "preact/hooks"
+    ]
+  }
+}
