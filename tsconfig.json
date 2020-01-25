@@ -9,7 +9,7 @@
     // Required for Preact type checks.
     "moduleResolution": "Node",
 
-    // <div /> -> h.createElement("div")
+    // <div /> => h("div")
     "jsx": "react",
     "jsxFactory": "h",
 
