@@ -4,6 +4,17 @@
 import h = preact.h
 
 declare module 'https://unpkg.com/csz' {
+  /**
+   * @example
+   * <p
+   *   class={css`
+   *     color: red;
+   *     font-size: large;
+   *   `}
+   * >
+   *   Red large text
+   * </p>
+   */
   export default function css(
     ...expressions: (
       | TemplateStringsArray
