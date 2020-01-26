@@ -10,7 +10,7 @@ export default function CanvasView({
   onPassQuestion?(): void
   onCorrectQuestion?(): void
 }) {
-  const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
+  const [ctxRef, initCanvas] = useCanvasRenderingContext2D()
   const [drawing, setDrawing] = useState(false)
   const startDrawing = (x: number, y: number) => {
     const ctx = ctxRef.current
@@ -50,21 +50,7 @@ export default function CanvasView({
 
       <div class={styleCanvas}>
         <canvas
-          ref={canvas => {
-            if (!canvas) return
-
-            if (!ctxRef.current) {
-              ctxRef.current = canvas.getContext('2d')
-            }
-
-            if (
-              canvas.width !== canvas.clientWidth &&
-              canvas.height !== canvas.clientHeight
-            ) {
-              canvas.width = canvas.clientWidth
-              canvas.height = canvas.clientHeight
-            }
-          }}
+          ref={initCanvas}
           onMouseDown={e => startDrawing(e.offsetX, e.offsetY)}
           onMouseMove={e => draw(e.offsetX, e.offsetY)}
           onMouseUp={finishDrawing}
@@ -103,6 +89,29 @@ export default function CanvasView({
       />
     </div>
   )
+}
+
+function useCanvasRenderingContext2D() {
+  const ref = useRef<CanvasRenderingContext2D | null>(null)
+
+  return [
+    ref,
+    (canvas: HTMLCanvasElement | null) => {
+      if (!canvas) return
+
+      if (!ref.current) {
+        ref.current = canvas.getContext('2d')
+      }
+
+      if (
+        canvas.width !== canvas.clientWidth &&
+        canvas.height !== canvas.clientHeight
+      ) {
+        canvas.width = canvas.clientWidth
+        canvas.height = canvas.clientHeight
+      }
+    },
+  ] as const
 }
 
 const style = css`
