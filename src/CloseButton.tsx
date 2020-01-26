@@ -1,17 +1,19 @@
 import css from 'https://unpkg.com/csz'
 
 export default function CloseButton({
+  floating,
   disabled,
   onClick,
   class: className = '',
 }: {
+  floating?: boolean
   disabled?: boolean
   onClick?(): void
   class?: string
 }) {
   return (
     <button
-      class={`${style} ${className}`}
+      class={`${style} ${floating ? styleFloating : ''} ${className}`}
       type="button"
       disabled={disabled}
       onClick={onClick}
@@ -35,4 +37,11 @@ const style = css`
   line-height: 1;
   width: 16vw;
   height: 16vw;
+`
+
+const styleFloating = css`
+  position: fixed;
+  top: 2vw;
+  right: 2vw;
+  z-index: 10;
 `

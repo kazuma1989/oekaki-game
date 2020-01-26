@@ -42,11 +42,7 @@ export default function CanvasView({
 
   return (
     <div class={style}>
-      <CloseButton
-        class={styleCloseButton}
-        data-label="&#x1F4A3;"
-        onClick={clearAll}
-      />
+      <CloseButton floating data-label="&#x1F4A3;" onClick={clearAll} />
 
       <div class={styleCanvas}>
         <canvas
@@ -124,13 +120,6 @@ const style = css`
     'button button' 15%
     / 50% 50%;
   gap: 2vw 0;
-`
-
-const styleCloseButton = css`
-  position: fixed;
-  top: 2vw;
-  right: 2vw;
-  z-index: 10;
 `
 
 const styleCanvas = css`

@@ -15,7 +15,7 @@ export default function ResultView({
 }) {
   return (
     <div class={style}>
-      <CloseButton class={styleCloseButton} onClick={onClose} />
+      <CloseButton floating onClick={onClose} />
 
       <div class={styleLabel}>結果</div>
 
@@ -42,13 +42,6 @@ const style = css`
   justify-content: center;
   align-content: center;
   align-items: end;
-`
-
-const styleCloseButton = css`
-  position: fixed;
-  top: 2vw;
-  right: 2vw;
-  z-index: 10;
 `
 
 const styleLabel = css`
