@@ -9,6 +9,7 @@
     "start": "concurrently npm:serve npm:tsc",
     "serve": "servor ./public --reload --browse",
     "tsc": "tsc --watch",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
