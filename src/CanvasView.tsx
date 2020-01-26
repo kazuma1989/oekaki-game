@@ -1,5 +1,5 @@
-import { useState, useRef } from '/web_modules/preact/hooks.js'
 import css from 'https://unpkg.com/csz'
+import { useState, useRef } from '/web_modules/preact/hooks.js'
 import Button from './Button.js'
 import CloseButton from './CloseButton.js'
 

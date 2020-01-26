@@ -5,7 +5,9 @@ import CanvasView from './CanvasView.js'
 import ResultView from './ResultView.js'
 
 export default function App() {
-  const [viewMode, setViewMode] = useState('opening')
+  const [viewMode, setViewMode] = useState<
+    'opening' | 'game' | 'canvas' | 'result'
+  >('opening')
   const showResult = () => setViewMode('result')
   const closeResult = () => setViewMode('game')
   const startDrawing = () => setViewMode('canvas')
@@ -124,6 +126,7 @@ export default function App() {
       )
 
     default:
+      const _: never = viewMode
       return <div>ERROR</div>
   }
 }
