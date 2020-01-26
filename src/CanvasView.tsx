@@ -51,12 +51,19 @@ export default function CanvasView({
       <div class={styleCanvas}>
         <canvas
           ref={canvas => {
-            if (!canvas || ctxRef.current) return
+            if (!canvas) return
 
-            ctxRef.current = canvas.getContext('2d')
+            if (!ctxRef.current) {
+              ctxRef.current = canvas.getContext('2d')
+            }
 
-            canvas.width = canvas.offsetWidth
-            canvas.height = canvas.offsetHeight
+            if (
+              canvas.width !== canvas.clientWidth &&
+              canvas.height !== canvas.clientHeight
+            ) {
+              canvas.width = canvas.clientWidth
+              canvas.height = canvas.clientHeight
+            }
           }}
           onMouseDown={e => startDrawing(e.offsetX, e.offsetY)}
           onMouseMove={e => draw(e.offsetX, e.offsetY)}
