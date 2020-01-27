@@ -6,10 +6,10 @@
   "license": "MIT",
   "scripts": {
     "prepare": "snowpack --clean --dest ./public/web_modules/",
-    "start": "concurrently npm:serve npm:tsc",
-    "serve": "servor ./public --reload --browse",
-    "tsc": "tsc --watch",
+    "start": "concurrently npm:serve npm:build-watch",
+    "serve": "live-server ./public",
     "build": "tsc",
+    "build-watch": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "concurrently": "^5.0.2",
-    "servor": "^3.1.0",
+    "live-server": "^1.2.1",
     "snowpack": "^1.1.0",
     "typescript": "^3.7.5"
   },
