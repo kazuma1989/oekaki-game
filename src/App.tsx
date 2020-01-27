@@ -1,52 +1,17 @@
-import { useState, useEffect } from '/web_modules/preact/hooks.js'
+import produce from '/web_modules/immer.js'
+import { useReducer, useEffect } from '/web_modules/preact/hooks.js'
 import OpeningView from './OpeningView.js'
 import GameView from './GameView.js'
 import CanvasView from './CanvasView.js'
 import ResultView from './ResultView.js'
 
-export default function App() {
-  const [viewMode, setViewMode] = useState<
-    'opening' | 'game' | 'canvas' | 'result'
-  >('opening')
-  const showResult = () => setViewMode('result')
-  const closeResult = () => setViewMode('game')
-  const startDrawing = () => setViewMode('canvas')
-
-  const [tutorial, setTutorial] = useState(false)
-  const startGame = () => {
-    setTutorial(false)
-    setViewMode('game')
-  }
-  const startTutorial = () => {
-    setTutorial(true)
-    setViewMode('game')
-  }
-
-  const [questionState, setQuestionState] = useState<
-    'drawing' | 'passed' | 'correct'
-  >('drawing')
-  const [passCount, setPassCount] = useState(0)
-  const [correctCount, setCorrectCount] = useState(0)
-  const passQuestion = () => {
-    setViewMode('game')
-    setQuestionState('passed')
-    setPassCount(v => v + 1)
-  }
-  const correctQuestion = () => {
-    setViewMode('game')
-    setQuestionState('correct')
-    setCorrectCount(v => v + 1)
-  }
-  const goToNextQuestion = () => setQuestionState('drawing')
-
-  const resetGame = () => {
-    setViewMode('opening')
-    setQuestionState('drawing')
-    setPassCount(0)
-    setCorrectCount(0)
-  }
-
-  const [rawQuestions, setRawQuestions] = useState<
+type State = {
+  viewMode: 'opening' | 'game' | 'canvas' | 'result'
+  tutorial: boolean
+  questionState: 'drawing' | 'passed' | 'correct'
+  passCount: number
+  correctCount: number
+  rawQuestions:
     | {
         mainText: string
         subText: string
@@ -54,7 +19,153 @@ export default function App() {
         disabled: boolean
       }[]
     | null
-  >(null)
+}
+
+type Action =
+  | {
+      type: 'showResult'
+    }
+  | {
+      type: 'closeResult'
+    }
+  | {
+      type: 'startDrawing'
+    }
+  | {
+      type: 'startGame'
+    }
+  | {
+      type: 'startTutorial'
+    }
+  | {
+      type: 'passQuestion'
+    }
+  | {
+      type: 'correctQuestion'
+    }
+  | {
+      type: 'goToNextQuestion'
+    }
+  | {
+      type: 'resetGame'
+    }
+  | {
+      type: 'loadStart.rawQuestions'
+    }
+  | {
+      type: 'loadEnd.rawQuestions'
+      payload: {
+        sheetValues: (string | boolean)[][]
+      }
+    }
+
+const reducer = produce((state: State, action: Action) => {
+  switch (action.type) {
+    case 'showResult':
+      state.viewMode = 'result'
+      break
+
+    case 'closeResult':
+      state.viewMode = 'game'
+      break
+
+    case 'startDrawing':
+      state.viewMode = 'canvas'
+      break
+
+    case 'startGame':
+      state.tutorial = false
+      state.viewMode = 'game'
+      break
+
+    case 'startTutorial':
+      state.tutorial = true
+      state.viewMode = 'game'
+      break
+
+    case 'passQuestion':
+      state.viewMode = 'game'
+      state.questionState = 'passed'
+      state.passCount += 1
+      break
+
+    case 'correctQuestion':
+      state.viewMode = 'game'
+      state.questionState = 'correct'
+      state.correctCount += 1
+      break
+
+    case 'goToNextQuestion':
+      state.questionState = 'drawing'
+      break
+
+    case 'resetGame':
+      state.viewMode = 'opening'
+      state.questionState = 'drawing'
+      state.passCount = 0
+      state.correctCount = 0
+      break
+
+    case 'loadStart.rawQuestions':
+      state.rawQuestions = null
+      break
+
+    case 'loadEnd.rawQuestions':
+      const { sheetValues } = action.payload
+
+      const parsed = sheetValues
+        .slice(1)
+        .map(([mainText, subText, forTutorial, disabled]) => ({
+          mainText: mainText as string,
+          subText: subText as string,
+          forTutorial: Boolean(forTutorial),
+          disabled: Boolean(disabled),
+        }))
+        .filter(
+          ({ mainText, subText, disabled }) =>
+            !disabled && (mainText || subText),
+        )
+      state.rawQuestions = shuffle(parsed)
+      break
+
+    default:
+      const _: never = action
+  }
+})
+
+export default function App() {
+  const [
+    {
+      viewMode,
+      tutorial,
+      questionState,
+      passCount,
+      correctCount,
+      rawQuestions,
+    },
+    dispatch,
+  ] = useReducer<State, Action>(reducer, {
+    viewMode: 'opening',
+    tutorial: false,
+    questionState: 'drawing',
+    passCount: 0,
+    correctCount: 0,
+    rawQuestions: null,
+  })
+
+  const showResult = () => dispatch({ type: 'showResult' })
+  const closeResult = () => dispatch({ type: 'closeResult' })
+  const startDrawing = () => dispatch({ type: 'startDrawing' })
+
+  const startGame = () => dispatch({ type: 'startGame' })
+  const startTutorial = () => dispatch({ type: 'startTutorial' })
+
+  const passQuestion = () => dispatch({ type: 'passQuestion' })
+  const correctQuestion = () => dispatch({ type: 'correctQuestion' })
+  const goToNextQuestion = () => dispatch({ type: 'goToNextQuestion' })
+
+  const resetGame = () => dispatch({ type: 'resetGame' })
+
   const questions = rawQuestions
     ? rawQuestions
         .filter(q => q.forTutorial === tutorial)
@@ -62,22 +173,11 @@ export default function App() {
     : []
   const loading = rawQuestions === null
   const loadQuestions = async () => {
-    setRawQuestions(null)
+    dispatch({ type: 'loadStart.rawQuestions' })
 
     const sheetValues = await fetchSheetValues()
-    const parsed = sheetValues
-      .slice(1)
-      .map(([mainText, subText, forTutorial, disabled]) => ({
-        mainText: mainText as string,
-        subText: subText as string,
-        forTutorial: Boolean(forTutorial),
-        disabled: Boolean(disabled),
-      }))
-      .filter(
-        ({ mainText, subText, disabled }) => !disabled && (mainText || subText),
-      )
 
-    setRawQuestions(shuffle(parsed))
+    dispatch({ type: 'loadEnd.rawQuestions', payload: { sheetValues } })
   }
   useEffect(() => {
     loadQuestions()
