@@ -1,0 +1,16 @@
+:root {
+  --black: #000000;
+  --gray170: #292827;
+  --gray150: #3b3a39;
+  --gray50: #d2d0ce;
+  --white: #ffffff;
+
+  --red10: #d13438;
+  --cyanBlue10: #0078d4;
+}
+
+:root {
+  font-family: 'M PLUS Rounded 1c', 'ヒラギノ角ゴ StdN W8', sans-serif;
+  font-size: min(10vw, 10vh);
+  color: var(--gray150);
+}

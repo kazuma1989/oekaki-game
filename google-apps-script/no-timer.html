@@ -59,6 +59,15 @@
       .button:disabled {
         filter: opacity(0.5);
       }
+      .button-close {
+        position: fixed;
+        top: 2vw;
+        right: 2vw;
+        z-index: 10;
+        line-height: 1;
+        width: 16vw;
+        height: 16vw;
+      }
 
       /* Views */
       .opening-view {
@@ -142,11 +151,34 @@
         filter: opacity(0.5);
       }
       .game-view-button {
+        grid-area: button;
+
         margin: 0 2vw 2vw 2vw;
         padding: 0;
       }
-      .game-view-button-wide {
-        grid-area: button;
+
+      .canvas-view {
+        display: grid;
+        grid-template:
+          'canvas canvas' auto
+          'button button' 15%
+          / 50% 50%;
+        gap: 2vw 0;
+      }
+      .canvas-view-canvas {
+        grid-area: canvas;
+      }
+      .canvas-view-canvas > canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .canvas-view-button {
+        margin: 0 2vw 2vw 2vw;
+        padding: 0;
       }
 
       .result-view {
@@ -161,15 +193,6 @@
         justify-content: center;
         align-content: center;
         align-items: end;
-      }
-      .result-view-close-button {
-        position: fixed;
-        top: 2vw;
-        right: 2vw;
-        z-index: 10;
-        line-height: 1;
-        width: 16vw;
-        height: 16vw;
       }
       .result-view-label {
         font-size: 18vw;
@@ -190,7 +213,7 @@
 
     <script type="text/babel">
       const { React, ReactDOM } = window
-      const { useState, useEffect } = React
+      const { useState, useEffect, useRef } = React
 
       ReactDOM.render(<App />, document.getElementById('root'))
 
@@ -198,6 +221,7 @@
         const [viewMode, setViewMode] = useState('opening')
         const showResult = () => setViewMode('result')
         const closeResult = () => setViewMode('game')
+        const startDrawing = () => setViewMode('canvas')
 
         const [tutorial, setTutorial] = useState(false)
         const startGame = () => {
@@ -213,20 +237,22 @@
         const [passCount, setPassCount] = useState(0)
         const [correctCount, setCorrectCount] = useState(0)
         const passQuestion = () => {
+          setViewMode('game')
           setQuestionState('passed')
           setPassCount(v => v + 1)
         }
         const correctQuestion = () => {
+          setViewMode('game')
           setQuestionState('correct')
           setCorrectCount(v => v + 1)
         }
         const goToNextQuestion = () => setQuestionState('drawing')
 
         const resetGame = () => {
+          setViewMode('opening')
           setQuestionState('drawing')
           setPassCount(0)
           setCorrectCount(0)
-          setViewMode('opening')
         }
 
         const [rawQuestions, setRawQuestions] = useState(null)
@@ -275,10 +301,17 @@
                 questionState={questionState}
                 passCount={passCount}
                 correctCount={correctCount}
-                onPassQuestion={passQuestion}
-                onCorrectQuestion={correctQuestion}
+                onStartDrawing={startDrawing}
                 onNextQuestion={goToNextQuestion}
                 onShowResult={showResult}
+              />
+            )
+
+          case 'canvas':
+            return (
+              <CanvasView
+                onPassQuestion={passQuestion}
+                onCorrectQuestion={correctQuestion}
               />
             )
 
@@ -291,6 +324,9 @@
                 onReset={resetGame}
               />
             )
+
+          default:
+            return <div>ERROR</div>
         }
       }
 
@@ -330,8 +366,7 @@
         questionState,
         passCount,
         correctCount,
-        onPassQuestion,
-        onCorrectQuestion,
+        onStartDrawing,
         onNextQuestion,
         onShowResult,
       }) {
@@ -384,23 +419,15 @@
             )}
 
             {questionState === 'drawing' ? (
-              <>
-                <Button
-                  className="game-view-button"
-                  label="パス"
-                  disabled={finished}
-                  onClick={onPassQuestion}
-                />
-                <Button
-                  className="game-view-button button-primary"
-                  label="正解!"
-                  disabled={finished}
-                  onClick={onCorrectQuestion}
-                />
-              </>
+              <Button
+                className="game-view-button button-primary"
+                label="絵を描く"
+                disabled={finished}
+                onClick={onStartDrawing}
+              />
             ) : (
               <Button
-                className="game-view-button game-view-button-wide button-primary"
+                className="game-view-button button-primary"
                 label="次のお題を表示"
                 disabled={finished}
                 onClick={onNextQuestion}
@@ -410,11 +437,107 @@
         )
       }
 
+      function CanvasView({ onPassQuestion, onCorrectQuestion }) {
+        const ctxRef = useRef(null)
+        const [drawing, setDrawing] = useState(false)
+        const startDrawing = (x, y) => {
+          const ctx = ctxRef.current
+          if (!ctx) return
+
+          setDrawing(true)
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+        }
+        const draw = (x, y) => {
+          if (!drawing) return
+
+          const ctx = ctxRef.current
+          if (!ctx) return
+
+          ctx.lineTo(x, y)
+          ctx.stroke()
+        }
+        const finishDrawing = () => {
+          setDrawing(false)
+        }
+        const clearAll = () => {
+          const ctx = ctxRef.current
+          if (!ctx) return
+
+          const { width, height } = ctx.canvas
+          ctx.clearRect(0, 0, width, height)
+        }
+
+        return (
+          <div className="canvas-view fullscreen base-font">
+            <Button
+              className="button-close"
+              label="&#x1F4A3;"
+              onClick={clearAll}
+            />
+
+            <div className="canvas-view-canvas">
+              <canvas
+                ref={canvas => {
+                  if (!canvas || ctxRef.current) return
+
+                  ctxRef.current = canvas.getContext('2d')
+
+                  canvas.width = canvas.offsetWidth
+                  canvas.height = canvas.offsetHeight
+                }}
+                onMouseDown={e =>
+                  startDrawing(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
+                }
+                onMouseMove={e =>
+                  draw(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
+                }
+                onMouseUp={finishDrawing}
+                onMouseLeave={finishDrawing}
+                onTouchStart={e => {
+                  e.preventDefault()
+
+                  const { touches } = e.nativeEvent
+                  if (touches.length !== 1) return
+
+                  const [touch] = touches
+                  // FIXME 雑な座標取得
+                  startDrawing(touch.clientX, touch.clientY)
+                }}
+                onTouchMove={e => {
+                  e.preventDefault()
+
+                  const { touches } = e.nativeEvent
+                  if (touches.length !== 1) return
+
+                  const [touch] = touches
+                  // FIXME 雑な座標取得
+                  draw(touch.clientX, touch.clientY)
+                }}
+                onTouchEnd={finishDrawing}
+                onTouchCancel={finishDrawing}
+              />
+            </div>
+
+            <Button
+              className="canvas-view-button"
+              label="パス"
+              onClick={onPassQuestion}
+            />
+            <Button
+              className="canvas-view-button button-primary"
+              label="正解!"
+              onClick={onCorrectQuestion}
+            />
+          </div>
+        )
+      }
+
       function ResultView({ passCount, correctCount, onClose, onReset }) {
         return (
           <div className="result-view fullscreen base-font">
             <Button
-              className="result-view-close-button"
+              className="button-close"
               label="&times;"
               onClick={onClose}
             />

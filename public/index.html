@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja" class="full-height">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>お絵かき お題当て</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/ress@2.0.4/dist/ress.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c:900&display=swap&subset=japanese"
+    />
+
+    <link rel="stylesheet" href="/style.css" />
+    <style>
+      .full-height {
+        height: 100%;
+      }
+
+      .app-screen {
+        overflow: hidden;
+        touch-action: manipulation;
+      }
+    </style>
+  </head>
+
+  <body class="full-height app-screen">
+    <div id="root" class="full-height"></div>
+
+    <script type="module">
+      import { h } from '/web_modules/preact.js'
+      self.h = h
+    </script>
+    <script type="module" src="/dist/index.js"></script>
+  </body>
+</html>

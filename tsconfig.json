@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    // Choose your target based on which browsers you'd like to support.
+    "target": "ES2017",
+
+    // Required: Use module="ESNext" so that TS won't compile/disallow any ESM syntax.
+    "module": "ESNext",
+
+    // Required for Preact type checks.
+    "moduleResolution": "Node",
+
+    // <div /> => h("div")
+    "jsx": "react",
+    "jsxFactory": "h",
+
+    // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
+    "baseUrl": ".",
+    "paths": {
+      "/web_modules/*.js": [
+        "node_modules/@types/*",
+        "node_modules/*",
+        "web_modules/*.js"
+      ]
+    },
+
+    // Redirect output structure to the directory.
+    "outDir": "./public/dist",
+
+    // Useful type checks.
+    "strictNullChecks": true
+  },
+
+  "include": ["src/**/*"]
+}
