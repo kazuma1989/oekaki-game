@@ -8,17 +8,20 @@ import ResultView from './ResultView.js'
 type State = {
   viewMode: 'opening' | 'game' | 'canvas' | 'result'
   tutorial: boolean
+
   questionState: 'drawing' | 'passed' | 'correct'
   passCount: number
   correctCount: number
-  rawQuestions:
-    | {
-        mainText: string
-        subText: string
-        forTutorial: boolean
-        disabled: boolean
-      }[]
-    | null
+
+  loading: boolean
+  questions: {
+    mainText: string
+    subText: string
+  }[]
+  tutorialQuestions: {
+    mainText: string
+    subText: string
+  }[]
 }
 
 type Action =
@@ -50,10 +53,10 @@ type Action =
       type: 'resetGame'
     }
   | {
-      type: 'loadStart.rawQuestions'
+      type: 'loadStart.sheetValues'
     }
   | {
-      type: 'loadEnd.rawQuestions'
+      type: 'loadEnd.sheetValues'
       payload: {
         sheetValues: (string | boolean)[][]
       }
@@ -106,26 +109,32 @@ const reducer = produce((state: State, action: Action) => {
       state.correctCount = 0
       break
 
-    case 'loadStart.rawQuestions':
-      state.rawQuestions = null
+    case 'loadStart.sheetValues':
+      state.loading = true
       break
 
-    case 'loadEnd.rawQuestions':
+    case 'loadEnd.sheetValues':
       const { sheetValues } = action.payload
+
+      state.loading = false
 
       const parsed = sheetValues
         .slice(1)
-        .map(([mainText, subText, forTutorial, disabled]) => ({
-          mainText: mainText as string,
-          subText: subText as string,
-          forTutorial: Boolean(forTutorial),
-          disabled: Boolean(disabled),
-        }))
-        .filter(
-          ({ mainText, subText, disabled }) =>
-            !disabled && (mainText || subText),
-        )
-      state.rawQuestions = shuffle(parsed)
+        .map(([mainText, subText, forTutorial, disabled]) => {
+          if (disabled || (!mainText && !subText)) {
+            return null
+          }
+
+          return {
+            mainText: mainText as string,
+            subText: subText as string,
+            forTutorial: Boolean(forTutorial),
+          }
+        })
+        .filter(nonNull)
+
+      state.questions = shuffle(parsed.filter(q => !q.forTutorial))
+      state.tutorialQuestions = shuffle(parsed.filter(q => q.forTutorial))
       break
 
     default:
@@ -141,7 +150,9 @@ export default function App() {
       questionState,
       passCount,
       correctCount,
-      rawQuestions,
+      loading,
+      questions,
+      tutorialQuestions,
     },
     dispatch,
   ] = useReducer<State, Action>(reducer, {
@@ -150,7 +161,9 @@ export default function App() {
     questionState: 'drawing',
     passCount: 0,
     correctCount: 0,
-    rawQuestions: null,
+    loading: false,
+    questions: [],
+    tutorialQuestions: [],
   })
 
   const showResult = () => dispatch({ type: 'showResult' })
@@ -166,18 +179,12 @@ export default function App() {
 
   const resetGame = () => dispatch({ type: 'resetGame' })
 
-  const questions = rawQuestions
-    ? rawQuestions
-        .filter(q => q.forTutorial === tutorial)
-        .map(({ mainText, subText }) => ({ mainText, subText }))
-    : []
-  const loading = rawQuestions === null
   const loadQuestions = async () => {
-    dispatch({ type: 'loadStart.rawQuestions' })
+    dispatch({ type: 'loadStart.sheetValues' })
 
     const sheetValues = await fetchSheetValues()
 
-    dispatch({ type: 'loadEnd.rawQuestions', payload: { sheetValues } })
+    dispatch({ type: 'loadEnd.sheetValues', payload: { sheetValues } })
   }
   useEffect(() => {
     loadQuestions()
@@ -197,7 +204,7 @@ export default function App() {
     case 'game':
       return (
         <GameView
-          questions={questions}
+          questions={tutorial ? tutorialQuestions : questions}
           questionState={questionState}
           passCount={passCount}
           correctCount={correctCount}
@@ -272,6 +279,10 @@ function shuffle<T>(array: T[]): T[] {
   }
 
   return target
+}
+
+function nonNull<T>(value: T | null | undefined): value is T {
+  return value !== null && value !== undefined
 }
 
 // FIXME ベタがきデータ
