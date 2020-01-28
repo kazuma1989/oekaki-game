@@ -1,7 +1,12 @@
 import produce from '/web_modules/immer.js'
-import { createStore, Store } from '/web_modules/redux.js'
+import { createStore } from '/web_modules/redux.js'
 import { createContext } from '/web_modules/preact.js'
-import { useReducer, useEffect, useContext } from '/web_modules/preact/hooks.js'
+import {
+  useReducer,
+  useContext,
+  useRef,
+  useLayoutEffect,
+} from '/web_modules/preact/hooks.js'
 
 type State = {
   viewMode: 'opening' | 'game' | 'canvas' | 'result'
@@ -181,7 +186,12 @@ export function useRootReducer() {
 // -----
 // Redux
 // Experimental
-const storeContext = createContext<Store<State, Action>>(createStore(reducer))
+const _store = createStore(
+  reducer,
+  undefined,
+  (window as any)?.__REDUX_DEVTOOLS_EXTENSION__?.(),
+)
+const storeContext = createContext(_store)
 
 export function useStore() {
   return useContext(storeContext)
@@ -193,16 +203,46 @@ export function useDispatch() {
   return store.dispatch
 }
 
-export function useSelector<TSlice>(
-  selector: (state: State) => TSlice,
-  equalityFn: (a: TSlice, b: TSlice) => boolean = refEquality,
-): TSlice {
+export function useSelector<TSelectedState>(
+  selector: (state: State) => TSelectedState,
+  equalityFn: (a: TSelectedState, b: any) => boolean = refEquality,
+): TSelectedState {
   const [, forceRender] = useReducer(s => s + 1, 0)
 
   const store = useStore()
-  useEffect(() => store.subscribe(() => forceRender({})), [store])
+  const latestSelector = useRef(selector)
+  const latestSelectedState = useRef<TSelectedState | null>(null)
 
-  return selector(store.getState())
+  let selectedState: TSelectedState
+  if (latestSelectedState.current && selector === latestSelector.current) {
+    selectedState = latestSelectedState.current
+  } else {
+    selectedState = selector(store.getState())
+  }
+
+  useLayoutEffect(() => {
+    latestSelector.current = selector
+    latestSelectedState.current = selectedState
+  })
+
+  useLayoutEffect(
+    () =>
+      store.subscribe(() => {
+        const newSelectedState = latestSelector.current(store.getState())
+
+        const changed = !equalityFn(
+          newSelectedState,
+          latestSelectedState.current,
+        )
+        if (changed) {
+          latestSelectedState.current = newSelectedState
+          forceRender({})
+        }
+      }),
+    [store, equalityFn],
+  )
+
+  return selectedState
 }
 
 const refEquality = (a: any, b: any) => a === b
