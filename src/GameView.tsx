@@ -1,5 +1,7 @@
 import css from 'https://unpkg.com/csz'
+import { useState } from '/web_modules/preact/hooks.js'
 import Button from './Button.js'
+import Timer from './Timer.js'
 
 export default function GameView({
   questions = [],
@@ -18,13 +20,16 @@ export default function GameView({
   onNextQuestion?(): void
   onShowResult?(): void
 }) {
+  const [timerFinished, setTimerFinished] = useState(false)
+  const finishTimer = () => setTimerFinished(true)
+
   const index =
     questionState === 'drawing'
       ? passCount + correctCount
       : passCount + correctCount - 1
 
-  const questionsLeft = questions.length - index
-  const finished = questionsLeft === 0
+  const questionsLeft = questions.length > index
+  const finished = !questionsLeft || timerFinished
 
   let { mainText = '', subText = '' } = questions[index] || {}
   // お題をマスクして隠す
@@ -36,11 +41,11 @@ export default function GameView({
   return (
     <div class={style}>
       <div class={styleHeader}>
-        残り {questionsLeft} 問
+        <Timer limitSecond={300} onFinish={finishTimer} />
         <Button class={styleHeaderButton} label="結果" onClick={onShowResult} />
       </div>
 
-      {!finished ? (
+      {questionsLeft ? (
         <div class={styleQuestion}>
           <span class={styleQuestionMain}>{mainText}</span>
           <span class={styleQuestionSub}>{subText}</span>
