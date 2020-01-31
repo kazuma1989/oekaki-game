@@ -1,6 +1,6 @@
 // For omitting `import { h } from "preact"`
 // https://github.com/microsoft/TypeScript/issues/3180#issuecomment-102523512
-/// <reference path="../node_modules/preact/src/index.d.ts"/>
+/// <reference types="preact"/>
 import h = preact.h
 
 declare module 'https://unpkg.com/csz' {
