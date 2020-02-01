@@ -4,11 +4,11 @@ import Button from './Button.js'
 
 export default function OpeningView() {
   const dispatch = useDispatch()
-  const reload = () => dispatch({ type: 'loadStart.sheetValues' })
+  const reload = () => dispatch({ type: 'APIGetSheetValues.Reload' })
   const startTutorial = () => dispatch({ type: 'startTutorial' })
   const startGame = () => dispatch({ type: 'startGame' })
 
-  const loading = useSelector(state => state.loading)
+  const loading = useSelector(state => state.loadingState === 'loading')
 
   return (
     <div class={style}>

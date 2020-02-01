@@ -10,7 +10,7 @@ type State = {
   passCount: number
   correctCount: number
 
-  loading: boolean
+  loadingState: 'initial' | 'waiting' | 'loading' | 'complete' | 'error'
   questions: {
     mainText: string
     subText: string
@@ -50,10 +50,13 @@ type Action =
       type: 'resetGame'
     }
   | {
-      type: 'loadStart.sheetValues'
+      type: 'APIGetSheetValues.Start'
     }
   | {
-      type: 'loadEnd.sheetValues'
+      type: 'APIGetSheetValues.Reload'
+    }
+  | {
+      type: 'APIGetSheetValues.Complete'
       payload: {
         sheetValues: (string | boolean)[][]
       }
@@ -74,7 +77,7 @@ export const reducer: (state: State, action: Action) => State = produce(
         questionState: 'drawing',
         passCount: 0,
         correctCount: 0,
-        loading: false,
+        loadingState: 'initial',
         questions: [],
         tutorialQuestions: [],
       }
@@ -126,14 +129,18 @@ export const reducer: (state: State, action: Action) => State = produce(
         state.correctCount = 0
         break
 
-      case 'loadStart.sheetValues':
-        state.loading = true
+      case 'APIGetSheetValues.Start':
+        state.loadingState = 'loading'
         break
 
-      case 'loadEnd.sheetValues':
+      case 'APIGetSheetValues.Reload':
+        state.loadingState = 'waiting'
+        break
+
+      case 'APIGetSheetValues.Complete':
         const { sheetValues } = action.payload
 
-        state.loading = false
+        state.loadingState = 'complete'
 
         const parsed = sheetValues
           .slice(1)
