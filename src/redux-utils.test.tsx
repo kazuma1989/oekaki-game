@@ -7,9 +7,10 @@ function TypingsTest() {
   })
 
   const store = useStore()
-  store.getState().loading
+  store.getState().loadingState === 'complete'
 
-  const state = useSelector(state => state.correctCount)
+  const state = useSelector(state => state.loadingState)
+  state === 'initial'
 
   return (
     <Provider value={store}>

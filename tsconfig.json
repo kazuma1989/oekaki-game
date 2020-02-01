@@ -22,13 +22,12 @@
       ]
     },
 
-    // Redirect output structure to the directory.
-    "outDir": "./public/dist",
+    // Just type checking for IDEs
+    "noEmit": true,
 
     // Useful type checks.
     "strictNullChecks": true
   },
 
-  "include": ["src/**/*"],
-  "exclude": ["**/test.*", "**/*.test.*"]
+  "include": ["src/**/*"]
 }

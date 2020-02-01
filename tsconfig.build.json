@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig",
+
+  "compilerOptions": {
+    // Redirect output structure to the directory.
+    "outDir": "./public/dist",
+    "noEmit": false
+  },
+
+  "exclude": ["**/test.*", "**/*.test.*"]
+}
