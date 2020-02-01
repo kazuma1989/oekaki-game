@@ -1,12 +1,7 @@
 import produce from '/web_modules/immer.js'
 import { createStore } from '/web_modules/redux.js'
-import { createContext } from '/web_modules/preact.js'
-import {
-  useReducer,
-  useContext,
-  useRef,
-  useLayoutEffect,
-} from '/web_modules/preact/hooks.js'
+import { useReducer } from '/web_modules/preact/hooks.js'
+import { createReduxHooks } from './redux-utils.js'
 
 type State = {
   viewMode: 'opening' | 'game' | 'canvas' | 'result'
@@ -186,101 +181,14 @@ export function useRootReducer() {
 // -----
 // Redux
 // Experimental
-const _store = createStore(
+const store = createStore(
   reducer,
   undefined,
   (window as any)?.__REDUX_DEVTOOLS_EXTENSION__?.(),
 )
-const storeContext = createContext(_store)
 
-export function useStore() {
-  return useContext(storeContext)
-}
+const { Provider, useDispatch, useSelector, useStore } = createReduxHooks<
+  typeof store
+>()
 
-export function useDispatch() {
-  const store = useStore()
-
-  return store.dispatch
-}
-
-export function useSelector<TSelectedState>(
-  selector: (state: State) => TSelectedState,
-  equalityFn: (a: TSelectedState, b: any) => boolean = refEquality,
-): TSelectedState {
-  const [, forceRender] = useReducer(s => s + 1, 0)
-
-  const store = useStore()
-  const latestSelector = useRef(selector)
-  const latestSelectedState = useRef<TSelectedState | null>(null)
-
-  let selectedState: TSelectedState
-  if (latestSelectedState.current && selector === latestSelector.current) {
-    selectedState = latestSelectedState.current
-  } else {
-    selectedState = selector(store.getState())
-  }
-
-  useLayoutEffect(() => {
-    latestSelector.current = selector
-    latestSelectedState.current = selectedState
-  })
-
-  useLayoutEffect(
-    () =>
-      store.subscribe(() => {
-        const newSelectedState = latestSelector.current(store.getState())
-
-        const changed = !equalityFn(
-          newSelectedState,
-          latestSelectedState.current,
-        )
-        if (changed) {
-          latestSelectedState.current = newSelectedState
-          forceRender({})
-        }
-      }),
-    [store, equalityFn],
-  )
-
-  return selectedState
-}
-
-const refEquality = (a: any, b: any) => a === b
-
-// https://github.com/reduxjs/react-redux/blob/77a204412190e825aa35696fd88adf2f1d8bca02/src/utils/shallowEqual.js
-export function shallowEqual<T>(objA: T, objB: any) {
-  if (is(objA, objB)) return true
-
-  if (
-    typeof objA !== 'object' ||
-    objA === null ||
-    typeof objB !== 'object' ||
-    objB === null
-  ) {
-    return false
-  }
-
-  const keysA = Object.keys(objA)
-  const keysB = Object.keys(objB)
-
-  if (keysA.length !== keysB.length) return false
-
-  for (let i = 0; i < keysA.length; i++) {
-    if (
-      !Object.prototype.hasOwnProperty.call(objB, keysA[i]) ||
-      !is(objA[keysA[i]], objB[keysA[i]])
-    ) {
-      return false
-    }
-  }
-
-  return true
-}
-
-function is(x: any, y: any) {
-  if (x === y) {
-    return x !== 0 || y !== 0 || 1 / x === 1 / y
-  } else {
-    return x !== x && y !== y
-  }
-}
+export { store, Provider, useDispatch, useSelector, useStore }
