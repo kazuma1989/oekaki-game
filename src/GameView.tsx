@@ -1,23 +1,25 @@
 import css from 'https://unpkg.com/csz'
+import { useSelector, useDispatch } from './reducer.js'
 import Button from './Button.js'
 
-export default function GameView({
-  questions = [],
-  questionState,
-  passCount,
-  correctCount,
-  onStartDrawing,
-  onNextQuestion,
-  onShowResult,
-}: {
-  questions?: { mainText?: string; subText?: string }[]
-  questionState: 'drawing' | 'passed' | 'correct'
-  passCount: number
-  correctCount: number
-  onStartDrawing?(): void
-  onNextQuestion?(): void
-  onShowResult?(): void
-}) {
+export default function GameView() {
+  const dispatch = useDispatch()
+  const startDrawing = () => dispatch({ type: 'startDrawing' })
+  const nextQuestion = () => dispatch({ type: 'goToNextQuestion' })
+  const showResult = () => dispatch({ type: 'showResult' })
+
+  const [
+    questions,
+    questionState,
+    passCount,
+    correctCount,
+  ] = useSelector(state => [
+    state.tutorial ? state.tutorialQuestions : state.questions,
+    state.questionState,
+    state.passCount,
+    state.correctCount,
+  ])
+
   const index =
     questionState === 'drawing'
       ? passCount + correctCount
@@ -37,7 +39,7 @@ export default function GameView({
     <div class={style}>
       <div class={styleHeader}>
         残り {questionsLeft} 問
-        <Button class={styleHeaderButton} label="結果" onClick={onShowResult} />
+        <Button class={styleHeaderButton} label="結果" onClick={showResult} />
       </div>
 
       {!finished ? (
@@ -68,7 +70,7 @@ export default function GameView({
           theme="primary"
           label="絵を描く"
           disabled={finished}
-          onClick={onStartDrawing}
+          onClick={startDrawing}
         />
       ) : (
         <Button
@@ -76,7 +78,7 @@ export default function GameView({
           theme="primary"
           label="次のお題を表示"
           disabled={finished}
-          onClick={onNextQuestion}
+          onClick={nextQuestion}
         />
       )}
     </div>

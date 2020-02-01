@@ -6,32 +6,9 @@ import CanvasView from './CanvasView.js'
 import ResultView from './ResultView.js'
 
 export default function App() {
-  const {
-    viewMode,
-    tutorial,
-    questionState,
-    passCount,
-    correctCount,
-    loading,
-    questions,
-    tutorialQuestions,
-  } = useSelector(state => state)
+  const viewMode = useSelector(state => state.viewMode)
 
   const dispatch = useDispatch()
-
-  const showResult = () => dispatch({ type: 'showResult' })
-  const closeResult = () => dispatch({ type: 'closeResult' })
-  const startDrawing = () => dispatch({ type: 'startDrawing' })
-
-  const startGame = () => dispatch({ type: 'startGame' })
-  const startTutorial = () => dispatch({ type: 'startTutorial' })
-
-  const passQuestion = () => dispatch({ type: 'passQuestion' })
-  const correctQuestion = () => dispatch({ type: 'correctQuestion' })
-  const goToNextQuestion = () => dispatch({ type: 'goToNextQuestion' })
-
-  const resetGame = () => dispatch({ type: 'resetGame' })
-
   const loadQuestions = async () => {
     dispatch({ type: 'loadStart.sheetValues' })
 
@@ -39,51 +16,23 @@ export default function App() {
 
     dispatch({ type: 'loadEnd.sheetValues', payload: { sheetValues } })
   }
+
   useEffect(() => {
     loadQuestions()
   }, [])
 
   switch (viewMode) {
     case 'opening':
-      return (
-        <OpeningView
-          loading={loading}
-          onReload={loadQuestions}
-          onStartTutorial={startTutorial}
-          onStartGame={startGame}
-        />
-      )
+      return <OpeningView />
 
     case 'game':
-      return (
-        <GameView
-          questions={tutorial ? tutorialQuestions : questions}
-          questionState={questionState}
-          passCount={passCount}
-          correctCount={correctCount}
-          onStartDrawing={startDrawing}
-          onNextQuestion={goToNextQuestion}
-          onShowResult={showResult}
-        />
-      )
+      return <GameView />
 
     case 'canvas':
-      return (
-        <CanvasView
-          onPassQuestion={passQuestion}
-          onCorrectQuestion={correctQuestion}
-        />
-      )
+      return <CanvasView />
 
     case 'result':
-      return (
-        <ResultView
-          passCount={passCount}
-          correctCount={correctCount}
-          onClose={closeResult}
-          onReset={resetGame}
-        />
-      )
+      return <ResultView />
 
     default:
       const _: never = viewMode

@@ -1,17 +1,15 @@
 import css from 'https://unpkg.com/csz'
+import { useSelector, useDispatch } from './reducer.js'
 import Button from './Button.js'
 
-export default function OpeningView({
-  loading,
-  onReload,
-  onStartTutorial,
-  onStartGame,
-}: {
-  loading?: boolean
-  onReload?(): void
-  onStartTutorial?(): void
-  onStartGame?(): void
-}) {
+export default function OpeningView() {
+  const dispatch = useDispatch()
+  const reload = () => dispatch({ type: 'loadStart.sheetValues' })
+  const startTutorial = () => dispatch({ type: 'startTutorial' })
+  const startGame = () => dispatch({ type: 'startGame' })
+
+  const loading = useSelector(state => state.loading)
+
   return (
     <div class={style}>
       <div class={styleTitle}>お絵かき お題当て</div>
@@ -19,12 +17,12 @@ export default function OpeningView({
       <Button
         label={loading ? 'ロード中...' : 'お題リロード'}
         disabled={loading}
-        onClick={onReload}
+        onClick={reload}
       />
       <Button
         label="チュートリアル"
         disabled={loading}
-        onClick={onStartTutorial}
+        onClick={startTutorial}
       />
 
       <Button
@@ -32,7 +30,7 @@ export default function OpeningView({
         theme="primary"
         label="ゲーム開始!"
         disabled={loading}
-        onClick={onStartGame}
+        onClick={startGame}
       />
     </div>
   )
