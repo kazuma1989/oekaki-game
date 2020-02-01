@@ -1,4 +1,3 @@
-import { Fragment } from '/web_modules/preact.js'
 import { useEffect } from '/web_modules/preact/hooks.js'
 import { useSelector, useDispatch } from './reducer.js'
 import APIGetSheetValues from './APIGetSheetValues.js'
@@ -16,7 +15,7 @@ export default function App() {
   const viewMode = useSelector(state => state.viewMode)
 
   return (
-    <Fragment>
+    <>
       <APIGetSheetValues />
 
       {(() => {
@@ -38,6 +37,6 @@ export default function App() {
             return <div>ERROR</div>
         }
       })()}
-    </Fragment>
+    </>
   )
 }

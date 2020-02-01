@@ -1,7 +1,7 @@
-// For omitting `import { h } from "preact"`
+// For omitting `import * as React from "preact"`
 // https://github.com/microsoft/TypeScript/issues/3180#issuecomment-102523512
 /// <reference types="preact"/>
-import h = preact.h
+import React = preact
 
 declare module 'https://unpkg.com/csz' {
   /**
