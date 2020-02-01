@@ -1,6 +1,5 @@
 import produce from '/web_modules/immer.js'
-import { createStore } from '/web_modules/redux.js'
-import { useReducer } from '/web_modules/preact/hooks.js'
+import { Store } from '/web_modules/redux.js'
 import { createReduxHooks } from './redux-utils.js'
 
 type State = {
@@ -60,7 +59,13 @@ type Action =
       }
     }
 
-const reducer: (state: State, action: Action) => State = produce(
+const { Provider, useDispatch, useSelector, useStore } = createReduxHooks<
+  Store<State, Action>
+>()
+
+export { Provider, useDispatch, useSelector, useStore }
+
+export const reducer: (state: State, action: Action) => State = produce(
   (state: State | undefined, action: Action): void | State => {
     if (!state) {
       return {
@@ -172,23 +177,3 @@ function shuffle<T>(array: T[]): T[] {
 function nonNull<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined
 }
-
-const initialState = reducer(undefined as any, {} as any)
-export function useRootReducer() {
-  return useReducer<State, Action>(reducer, initialState)
-}
-
-// -----
-// Redux
-// Experimental
-const store = createStore(
-  reducer,
-  undefined,
-  (window as any)?.__REDUX_DEVTOOLS_EXTENSION__?.(),
-)
-
-const { Provider, useDispatch, useSelector, useStore } = createReduxHooks<
-  typeof store
->()
-
-export { store, Provider, useDispatch, useSelector, useStore }

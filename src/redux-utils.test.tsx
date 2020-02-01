@@ -1,10 +1,4 @@
-import {
-  store,
-  Provider,
-  useDispatch,
-  useStore,
-  useSelector,
-} from './reducer.js'
+import { Provider, useDispatch, useStore, useSelector } from './reducer.js'
 
 function TypingsTest() {
   const dispatch = useDispatch()
@@ -12,8 +6,8 @@ function TypingsTest() {
     type: 'closeResult',
   })
 
-  const _store = useStore()
-  _store.getState().loading
+  const store = useStore()
+  store.getState().loading
 
   const state = useSelector(state => state.correctCount)
 

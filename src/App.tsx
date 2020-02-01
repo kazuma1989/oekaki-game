@@ -1,24 +1,23 @@
 import { useEffect } from '/web_modules/preact/hooks.js'
-import { useRootReducer } from './reducer.js'
+import { useSelector, useDispatch } from './reducer.js'
 import OpeningView from './OpeningView.js'
 import GameView from './GameView.js'
 import CanvasView from './CanvasView.js'
 import ResultView from './ResultView.js'
 
 export default function App() {
-  const [
-    {
-      viewMode,
-      tutorial,
-      questionState,
-      passCount,
-      correctCount,
-      loading,
-      questions,
-      tutorialQuestions,
-    },
-    dispatch,
-  ] = useRootReducer()
+  const {
+    viewMode,
+    tutorial,
+    questionState,
+    passCount,
+    correctCount,
+    loading,
+    questions,
+    tutorialQuestions,
+  } = useSelector(state => state)
+
+  const dispatch = useDispatch()
 
   const showResult = () => dispatch({ type: 'showResult' })
   const closeResult = () => dispatch({ type: 'closeResult' })
