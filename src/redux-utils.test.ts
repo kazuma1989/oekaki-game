@@ -12,9 +12,5 @@ function TypingsTest() {
   const state = useSelector(state => state.loadingState)
   state === 'initial'
 
-  return (
-    <Provider value={store}>
-      <div></div>
-    </Provider>
-  )
+  return React.createElement(Provider, { value: store, children: null })
 }
