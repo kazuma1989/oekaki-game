@@ -1,4 +1,4 @@
-import css from 'https://unpkg.com/csz'
+import css from '/web_modules/csz.js'
 
 type Theme = 'default' | 'primary' | 'danger'
 

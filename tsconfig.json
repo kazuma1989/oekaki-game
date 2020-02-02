@@ -16,9 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "/web_modules/*.js": [
+        "src/typings/*",
         "node_modules/@types/*",
-        "node_modules/*",
-        "web_modules/*.js"
+        "node_modules/*"
       ]
     },
 
