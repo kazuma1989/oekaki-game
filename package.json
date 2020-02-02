@@ -10,7 +10,7 @@
     "build": "concurrently npm:compile npm:inject-manifest",
     "test": "tsc",
     "server": "live-server ./public",
-    "compile": "tsc --project ./tsconfig.build.json",
+    "compile": "tsc --project ./tsconfig-build.json",
     "compile-watch": "npm run compile -- --watch",
     "inject-manifest": "workbox injectManifest ./workbox-config.js"
   },
