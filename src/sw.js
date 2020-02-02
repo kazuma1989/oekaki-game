@@ -3,5 +3,9 @@ importScripts(
 )
 
 const { precacheAndRoute } = workbox.precaching
+const { registerRoute } = workbox.routing
+const { StaleWhileRevalidate } = workbox.strategies
 
 precacheAndRoute(self.__WB_MANIFEST)
+
+registerRoute(new RegExp('https://unpkg\\.com/.+'), new StaleWhileRevalidate())
