@@ -28,22 +28,10 @@
       }
     </style>
 
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () =>
-          navigator.serviceWorker.register('/sw.js'),
-        )
-      }
-    </script>
+    <script type="module" src="/dist/index.js"></script>
   </head>
 
   <body class="full-height app-screen">
     <div id="root" class="full-height"></div>
-
-    <script type="module">
-      import * as preact from '/web_modules/preact.js'
-      self.React = preact
-    </script>
-    <script type="module" src="/dist/index.js"></script>
   </body>
 </html>
