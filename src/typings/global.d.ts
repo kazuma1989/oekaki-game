@@ -3,6 +3,6 @@
 /// <reference types="preact"/>
 import React = preact
 
-declare module 'https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-window.prod.mjs' {
+declare module 'https://storage.googleapis.com/workbox-cdn/releases/5.0.0/workbox-window.prod.mjs' {
   export * from 'workbox-window'
 }
