@@ -7,12 +7,12 @@
   "scripts": {
     "prepare": "snowpack --optimize --clean --dest ./public/web_modules/",
     "start": "concurrently npm:server npm:compile-watch",
-    "build": "concurrently npm:compile npm:inject-manifest",
+    "build": "concurrently npm:compile",
     "test": "tsc",
-    "server": "live-server ./public",
     "compile": "tsc --project ./tsconfig-build.json",
+    "postcompile": "workbox injectManifest ./workbox-config.js",
     "compile-watch": "npm run compile -- --watch",
-    "inject-manifest": "workbox injectManifest ./workbox-config.js"
+    "server": "live-server ./public"
   },
   "dependencies": {
     "immer": "^5.3.2",
