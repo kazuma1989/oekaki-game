@@ -9,9 +9,8 @@
     // Required for Preact type checks.
     "moduleResolution": "Node",
 
-    // <div /> => h("div")
+    // <div /> => React.createElement("div")
     "jsx": "react",
-    "jsxFactory": "h",
 
     // Required: Map "/web_modules/*" imports back to their node_modules/ TS definition files.
     "baseUrl": ".",
@@ -23,8 +22,8 @@
       ]
     },
 
-    // Redirect output structure to the directory.
-    "outDir": "./public/dist",
+    // Just type checking for IDEs
+    "noEmit": true,
 
     // Useful type checks.
     "strictNullChecks": true

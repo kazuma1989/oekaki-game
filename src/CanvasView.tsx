@@ -1,15 +1,14 @@
 import css from 'https://unpkg.com/csz'
 import { useState, useRef } from '/web_modules/preact/hooks.js'
+import { useDispatch } from './reducer.js'
 import Button from './Button.js'
 import CloseButton from './CloseButton.js'
 
-export default function CanvasView({
-  onPassQuestion,
-  onCorrectQuestion,
-}: {
-  onPassQuestion?(): void
-  onCorrectQuestion?(): void
-}) {
+export default function CanvasView() {
+  const dispatch = useDispatch()
+  const passQuestion = () => dispatch({ type: 'passQuestion' })
+  const correctQuestion = () => dispatch({ type: 'correctQuestion' })
+
   const [ctxRef, initCanvas] = useCanvasRenderingContext2D()
   const [drawing, setDrawing] = useState(false)
   const startDrawing = (x: number, y: number) => {
@@ -76,12 +75,12 @@ export default function CanvasView({
         />
       </div>
 
-      <Button class={styleButton} label="パス" onClick={onPassQuestion} />
+      <Button class={styleButton} label="パス" onClick={passQuestion} />
       <Button
         class={styleButton}
         theme="primary"
         label="正解!"
-        onClick={onCorrectQuestion}
+        onClick={correctQuestion}
       />
     </div>
   )
