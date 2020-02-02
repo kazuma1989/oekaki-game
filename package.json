@@ -19,9 +19,9 @@
   },
   "devDependencies": {
     "@types/redux": "^3.6.0",
-    "concurrently": "^5.0.2",
+    "concurrently": "^5.1.0",
     "live-server": "^1.2.1",
-    "snowpack": "^1.1.0",
+    "snowpack": "^1.1.2",
     "typescript": "^3.7.5"
   },
   "snowpack": {
