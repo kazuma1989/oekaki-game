@@ -21,7 +21,6 @@
     "redux": "^4.0.5"
   },
   "devDependencies": {
-    "@types/redux": "^3.6.0",
     "concurrently": "^5.0.2",
     "live-server": "^1.2.1",
     "snowpack": "^1.1.0",
