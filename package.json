@@ -5,7 +5,7 @@
   "author": "kazuma1989 <kazuma.ebina@quipper.com>",
   "license": "MIT",
   "scripts": {
-    "prepare": "snowpack --clean --dest ./public/web_modules/",
+    "prepare": "snowpack --optimize --clean --dest ./public/web_modules/",
     "start": "concurrently npm:serve npm:build-watch",
     "serve": "live-server ./public",
     "build": "tsc --project ./tsconfig.build.json",
