@@ -5,27 +5,32 @@
   "author": "kazuma1989 <kazuma.ebina@quipper.com>",
   "license": "MIT",
   "scripts": {
-    "prepare": "snowpack --clean --dest ./public/web_modules/",
-    "start": "concurrently npm:serve npm:build-watch",
-    "serve": "live-server ./public",
-    "build": "tsc --project ./tsconfig.build.json",
-    "build-watch": "tsc --project ./tsconfig.build.json --watch",
-    "test": "tsc"
+    "prepare": "snowpack --optimize --clean --dest ./public/web_modules/",
+    "start": "concurrently npm:server npm:compile-watch",
+    "build": "concurrently npm:compile",
+    "test": "tsc",
+    "compile": "tsc --project ./tsconfig-build.json",
+    "postcompile": "workbox injectManifest ./workbox-config.js",
+    "compile-watch": "npm run compile -- --watch",
+    "server": "live-server ./public"
   },
   "dependencies": {
+    "csz": "^1.2.0",
     "immer": "^5.3.2",
     "preact": "^10.2.1",
     "redux": "^4.0.5"
   },
   "devDependencies": {
-    "@types/redux": "^3.6.0",
     "concurrently": "^5.0.2",
     "live-server": "^1.2.1",
     "snowpack": "^1.1.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "workbox-cli": "^5.0.0",
+    "workbox-window": "^5.0.0"
   },
   "snowpack": {
     "webDependencies": [
+      "csz",
       "immer",
       "preact",
       "preact/hooks",

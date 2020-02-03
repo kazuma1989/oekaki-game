@@ -1,4 +1,4 @@
-import css from 'https://unpkg.com/csz'
+import css from '/web_modules/csz.js'
 
 export default function CloseButton({
   floating,
