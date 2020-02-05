@@ -16,6 +16,6 @@
     sans-serif;
 
   font-weight: 900;
-  font-size: min(10vw, 10vh);
+  font-size: 10vw;
   color: var(--gray150);
 }
