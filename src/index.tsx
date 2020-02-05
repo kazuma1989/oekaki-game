@@ -10,9 +10,10 @@ const store = createStore(
   (self as any)?.__REDUX_DEVTOOLS_EXTENSION__?.(),
 )
 
-import('./App.js').then(({ default: App }) => {
-  console.log('imported', App)
+const importApp = import('./App.js')
+const awaitSplash = new Promise<void>(resolve => setTimeout(resolve, 400))
 
+Promise.all([importApp, awaitSplash]).then(([{ default: App }]) => {
   preact.render(
     <Provider value={store}>
       <App />
