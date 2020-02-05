@@ -24,14 +24,42 @@
         overflow: hidden;
         touch-action: manipulation;
       }
+
+      .credit-view {
+        background-color: #ffd479;
+        font-size: initial;
+
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: center;
+      }
     </style>
 
     <script type="module" src="/dist/index.js"></script>
   </head>
 
   <body class="full-height app-screen">
-    <div id="root" class="full-height"></div>
-
     <noscript>このアプリを使うには JavaScript をオンにしてください。</noscript>
+
+    <div id="root" class="full-height">
+      <div class="credit-view full-height">
+        <img alt="イーゼルくん" src="/icons/icon-192x192.png" />
+
+        <p>
+          Icons made by
+          <a
+            href="https://www.flaticon.com/authors/freepik"
+            title="Freepik"
+            target="_blank"
+            >Freepik</a
+          >
+          from
+          <a href="https://www.flaticon.com/" title="Flaticon" target="_blank"
+            >www.flaticon.com</a
+          >
+        </p>
+      </div>
+    </div>
   </body>
 </html>
