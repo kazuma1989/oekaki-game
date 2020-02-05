@@ -1,4 +1,4 @@
-import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/5.0.0/workbox-window.prod.mjs'
+import { Workbox } from '/web_modules/workbox-window.js'
 import * as preact from '/web_modules/preact.js'
 import { createStore } from '/web_modules/redux.js'
 import { reducer, Provider } from './reducer.js'
