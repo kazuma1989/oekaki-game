@@ -39,7 +39,11 @@ export default function GameView() {
     <div className={style}>
       <div className={styleHeader}>
         残り {questionsLeft} 問
-        <Button className={styleHeaderButton} label="結果" onClick={showResult} />
+        <Button
+          className={styleHeaderButton}
+          label="結果"
+          onClick={showResult}
+        />
       </div>
 
       {!finished ? (
