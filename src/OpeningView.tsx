@@ -11,8 +11,8 @@ export default function OpeningView() {
   const loading = useSelector(state => state.loadingState === 'loading')
 
   return (
-    <div class={style}>
-      <div class={styleTitle}>お絵かき お題当て</div>
+    <div className={style}>
+      <div className={styleTitle}>お絵かき お題当て</div>
 
       <Button
         label={loading ? 'ロード中...' : 'お題リロード'}
@@ -26,7 +26,7 @@ export default function OpeningView() {
       />
 
       <Button
-        class={styleButton}
+        className={styleButton}
         theme="primary"
         label="ゲーム開始!"
         disabled={loading}

@@ -14,13 +14,13 @@ export default function ResultView() {
   ])
 
   return (
-    <div class={style}>
+    <div className={style}>
       <CloseButton floating onClick={close} />
 
-      <div class={styleLabel}>結果</div>
+      <div className={styleLabel}>結果</div>
 
-      <div class={styleCount}>正解 {correctCount} 回!</div>
-      <div class={styleCount}>パス {passCount} 回!</div>
+      <div className={styleCount}>正解 {correctCount} 回!</div>
+      <div className={styleCount}>パス {passCount} 回!</div>
 
       <Button theme="danger" label="リセット" onClick={reset} />
     </div>
