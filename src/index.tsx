@@ -1,4 +1,3 @@
-import { Workbox } from '/web_modules/workbox-window.js'
 import * as preact from '/web_modules/preact.js'
 import { createStore } from '/web_modules/redux.js'
 import { reducer, Provider } from './reducer.js'
@@ -20,24 +19,26 @@ preact.render(
 )
 
 if ('serviceWorker' in navigator) {
-  const wb = new Workbox('/sw.js')
+  import('/web_modules/workbox-window.js').then(({ Workbox }) => {
+    const wb = new Workbox('/sw.js')
 
-  // https://developers.google.com/web/tools/workbox/modules/workbox-window#example-cache-urls
-  wb.addEventListener('activated', () => {
-    // Get the current page URL + all resources the page loaded.
-    const urlsToCache = [
-      location.href,
-      ...performance.getEntriesByType('resource').map(r => r.name),
-    ]
+    // https://developers.google.com/web/tools/workbox/modules/workbox-window#example-cache-urls
+    wb.addEventListener('activated', () => {
+      // Get the current page URL + all resources the page loaded.
+      const urlsToCache = [
+        location.href,
+        ...performance.getEntriesByType('resource').map(r => r.name),
+      ]
 
-    // Send that list of URLs to your router in the service worker.
-    wb.messageSW({
-      type: 'CACHE_URLS',
-      payload: { urlsToCache },
+      // Send that list of URLs to your router in the service worker.
+      wb.messageSW({
+        type: 'CACHE_URLS',
+        payload: { urlsToCache },
+      })
     })
-  })
 
-  wb.register()
+    wb.register()
+  })
 }
 
 if (!['127.0.0.1', 'localhost'].includes(location.hostname)) {
