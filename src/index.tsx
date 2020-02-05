@@ -1,7 +1,6 @@
 import * as preact from '/web_modules/preact.js'
 import { createStore } from '/web_modules/redux.js'
 import { reducer, Provider } from './reducer.js'
-import App from './App.js'
 
 self.React = preact
 
@@ -11,12 +10,16 @@ const store = createStore(
   (self as any)?.__REDUX_DEVTOOLS_EXTENSION__?.(),
 )
 
-preact.render(
-  <Provider value={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')!,
-)
+import('./App.js').then(({ default: App }) => {
+  console.log('imported', App)
+
+  preact.render(
+    <Provider value={store}>
+      <App />
+    </Provider>,
+    document.getElementById('root')!,
+  )
+})
 
 if ('serviceWorker' in navigator) {
   import('/web_modules/workbox-window.js').then(({ Workbox }) => {
