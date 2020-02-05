@@ -40,10 +40,10 @@ export default function CanvasView() {
   }
 
   return (
-    <div class={style}>
+    <div className={style}>
       <CloseButton floating data-label="&#x1F4A3;" onClick={clearAll} />
 
-      <div class={styleCanvas}>
+      <div className={styleCanvas}>
         <canvas
           ref={initCanvas}
           onMouseDown={e => startDrawing(e.offsetX, e.offsetY)}
@@ -75,9 +75,9 @@ export default function CanvasView() {
         />
       </div>
 
-      <Button class={styleButton} label="パス" onClick={passQuestion} />
+      <Button className={styleButton} label="パス" onClick={passQuestion} />
       <Button
-        class={styleButton}
+        className={styleButton}
         theme="primary"
         label="正解!"
         onClick={correctQuestion}

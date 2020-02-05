@@ -36,37 +36,37 @@ export default function GameView() {
   }
 
   return (
-    <div class={style}>
-      <div class={styleHeader}>
+    <div className={style}>
+      <div className={styleHeader}>
         残り {questionsLeft} 問
-        <Button class={styleHeaderButton} label="結果" onClick={showResult} />
+        <Button className={styleHeaderButton} label="結果" onClick={showResult} />
       </div>
 
       {!finished ? (
-        <div class={styleQuestion}>
-          <span class={styleQuestionMain}>{mainText}</span>
-          <span class={styleQuestionSub}>{subText}</span>
+        <div className={styleQuestion}>
+          <span className={styleQuestionMain}>{mainText}</span>
+          <span className={styleQuestionSub}>{subText}</span>
 
           {questionState === 'passed' && (
-            <span class={styleQuestionResult}>パス</span>
+            <span className={styleQuestionResult}>パス</span>
           )}
           {questionState === 'correct' && (
             <span
-              class={`${styleQuestionResult} ${styleQuestionResultCorrect}`}
+              className={`${styleQuestionResult} ${styleQuestionResultCorrect}`}
             >
               正解!
             </span>
           )}
         </div>
       ) : (
-        <div class={styleQuestion}>
-          <span class={styleQuestionSub}>お題がありません!</span>
+        <div className={styleQuestion}>
+          <span className={styleQuestionSub}>お題がありません!</span>
         </div>
       )}
 
       {questionState === 'drawing' ? (
         <Button
-          class={styleButton}
+          className={styleButton}
           theme="primary"
           label="絵を描く"
           disabled={finished}
@@ -74,7 +74,7 @@ export default function GameView() {
         />
       ) : (
         <Button
-          class={styleButton}
+          className={styleButton}
           theme="primary"
           label="次のお題を表示"
           disabled={finished}

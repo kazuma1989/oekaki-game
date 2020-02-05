@@ -7,7 +7,7 @@ export default function css(path: string): string
 /**
  * @example
  * <p
- *   class={css`
+ *   className={css`
  *     color: red;
  *     font-size: large;
  *   `}

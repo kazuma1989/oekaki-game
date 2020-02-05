@@ -4,16 +4,16 @@ export default function CloseButton({
   floating,
   disabled,
   onClick,
-  class: className = '',
+  className = '',
 }: {
   floating?: boolean
   disabled?: boolean
   onClick?(): void
-  class?: string
+  className?: string
 }) {
   return (
     <button
-      class={`${style} ${floating ? styleFloating : ''} ${className}`}
+      className={`${style} ${floating ? styleFloating : ''} ${className}`}
       type="button"
       disabled={disabled}
       onClick={onClick}

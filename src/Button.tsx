@@ -7,17 +7,17 @@ export default function Button({
   label,
   disabled,
   onClick,
-  class: className = '',
+  className = '',
 }: {
   theme?: Theme
   label?: string
   disabled?: boolean
   onClick?(): void
-  class?: string
+  className?: string
 }) {
   return (
     <button
-      class={`${style} ${themes[theme]} ${className}`}
+      className={`${style} ${themes[theme]} ${className}`}
       type="button"
       disabled={disabled}
       onClick={onClick}
