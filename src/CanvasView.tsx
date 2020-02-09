@@ -16,6 +16,12 @@ export default function CanvasView() {
     if (!ctx) return
 
     setDrawing(true)
+
+    // Draw a dot
+    const dotSize = ctx.lineWidth * 3
+    ctx.fillRect(x - dotSize / 2, y - dotSize / 2, dotSize, dotSize)
+
+    // Start a path
     ctx.beginPath()
     ctx.moveTo(x, y)
   }
