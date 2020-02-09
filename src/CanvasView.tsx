@@ -9,83 +9,52 @@ export default function CanvasView() {
   const passQuestion = () => dispatch({ type: 'passQuestion' })
   const correctQuestion = () => dispatch({ type: 'correctQuestion' })
 
-  const [ctxRef, initCanvas] = useCanvasRenderingContext2D()
   const [drawing, setDrawing] = useState(false)
+  const ref = useRef<CanvasRenderingContext2D | null>(null)
+  const ctx = new Context2D(ref)
   const startDrawing = (x: number, y: number) => {
-    const ctx = ctxRef.current
-    if (!ctx) return
-
     setDrawing(true)
     dispatch({ type: 'draw.start', payload: { x, y } })
-
-    // Draw a dot
-    const dotSize = ctx.lineWidth * 3
-    ctx.fillRect(x - dotSize / 2, y - dotSize / 2, dotSize, dotSize)
-
-    // Start a path
-    ctx.beginPath()
-    ctx.moveTo(x, y)
+    ctx.start(x, y)
   }
   const draw = (x: number, y: number) => {
     if (!drawing) return
 
-    const ctx = ctxRef.current
-    if (!ctx) return
-
     dispatch({ type: 'draw.draw', payload: { x, y } })
-
-    ctx.lineTo(x, y)
-    ctx.stroke()
+    ctx.strokeTo(x, y)
   }
   const finishDrawing = () => {
     setDrawing(false)
   }
   const clearAll = () => {
-    const ctx = ctxRef.current
-    if (!ctx) return
-
     dispatch({ type: 'draw.clear' })
-
-    const { width, height } = ctx.canvas
-    ctx.clearRect(0, 0, width, height)
+    ctx.clear()
   }
 
   const store = useStore()
   const undo = () => {
-    const ctx = ctxRef.current
-    if (!ctx) return
-
     dispatch({ type: 'draw.undo' })
 
-    const { width, height } = ctx.canvas
-    ctx.clearRect(0, 0, width, height)
+    ctx.clear()
 
     store.getState().drawingHistory.forEach(action => {
       switch (action[0]) {
         case 'start': {
           const [, x, y] = action
 
-          // Draw a dot
-          const dotSize = ctx.lineWidth * 3
-          ctx.fillRect(x - dotSize / 2, y - dotSize / 2, dotSize, dotSize)
-
-          // Start a path
-          ctx.beginPath()
-          ctx.moveTo(x, y)
+          ctx.start(x, y)
           break
         }
 
         case 'draw': {
           const [, x, y] = action
 
-          ctx.lineTo(x, y)
-          ctx.stroke()
+          ctx.strokeTo(x, y)
           break
         }
 
         case 'clear': {
-          const { width, height } = ctx.canvas
-          ctx.clearRect(0, 0, width, height)
+          ctx.clear()
           break
         }
 
@@ -105,7 +74,7 @@ export default function CanvasView() {
 
       <div className={styleCanvas}>
         <canvas
-          ref={initCanvas}
+          ref={canvas => ctx.init(canvas)}
           onMouseDown={e => startDrawing(e.offsetX, e.offsetY)}
           onMouseMove={e => draw(e.offsetX, e.offsetY)}
           onMouseUp={finishDrawing}
@@ -146,27 +115,63 @@ export default function CanvasView() {
   )
 }
 
-function useCanvasRenderingContext2D() {
-  const ref = useRef<CanvasRenderingContext2D | null>(null)
+type Ref<T> = { current: T }
 
-  return [
-    ref,
-    (canvas: HTMLCanvasElement | null) => {
-      if (!canvas) return
+class Context2D {
+  constructor(private readonly ref: Ref<CanvasRenderingContext2D | null>) {}
 
-      if (!ref.current) {
-        ref.current = canvas.getContext('2d')
-      }
+  init(canvas: HTMLCanvasElement | null) {
+    if (!canvas) return
 
-      if (
-        canvas.width !== canvas.clientWidth &&
-        canvas.height !== canvas.clientHeight
-      ) {
-        canvas.width = canvas.clientWidth
-        canvas.height = canvas.clientHeight
-      }
-    },
-  ] as const
+    if (!this.ref.current) {
+      this.ref.current = canvas.getContext('2d')
+    }
+
+    if (
+      canvas.width !== canvas.clientWidth &&
+      canvas.height !== canvas.clientHeight
+    ) {
+      canvas.width = canvas.clientWidth
+      canvas.height = canvas.clientHeight
+    }
+  }
+
+  start(x: number, y: number) {
+    this.drawDot(x, y)
+    this.beginPath(x, y)
+  }
+
+  strokeTo(x: number, y: number) {
+    const ctx = this.ref.current
+    if (!ctx) return
+
+    ctx.lineTo(x, y)
+    ctx.stroke()
+  }
+
+  clear() {
+    const ctx = this.ref.current
+    if (!ctx) return
+
+    const { width, height } = ctx.canvas
+    ctx.clearRect(0, 0, width, height)
+  }
+
+  private drawDot(x: number, y: number) {
+    const ctx = this.ref.current
+    if (!ctx) return
+
+    const dotSize = ctx.lineWidth * 3
+    ctx.fillRect(x - dotSize / 2, y - dotSize / 2, dotSize, dotSize)
+  }
+
+  private beginPath(x: number, y: number) {
+    const ctx = this.ref.current
+    if (!ctx) return
+
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+  }
 }
 
 const style = css`
