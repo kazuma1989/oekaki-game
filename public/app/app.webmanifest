@@ -1,8 +1,8 @@
 {
   "name": "お絵かき お題当て",
   "short_name": "お絵かき",
-  "theme_color": "#ffd479",
-  "background_color": "#ffd479",
+  "theme_color": "white",
+  "background_color": "white",
   "display": "standalone",
   "scope": "/app/",
   "start_url": "/app/",
