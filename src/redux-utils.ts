@@ -1,11 +1,11 @@
-import { createContext } from '/web_modules/preact.js'
+import { createContext } from '/app/web_modules/preact.js'
 import {
   useReducer,
   useContext,
   useRef,
   useLayoutEffect,
-} from '/web_modules/preact/hooks.js'
-import { Store, Dispatch } from '/web_modules/redux.js'
+} from '/app/web_modules/preact/hooks.js'
+import { Store, Dispatch } from '/app/web_modules/redux.js'
 
 type StateOf<TStore> = TStore extends Store<infer S, any> ? S : unknown
 type ActionOf<TStore> = TStore extends Store<any, infer A> ? A : unknown

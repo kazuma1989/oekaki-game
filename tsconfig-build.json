@@ -2,8 +2,8 @@
   "extends": "./tsconfig",
 
   "compilerOptions": {
-    // Redirect output structure to the directory.
-    "outDir": "./public/dist",
+    // Redirect output structure to a directory.
+    // The directory is defined in the package.json#scripts.
     "noEmit": false
   },
 

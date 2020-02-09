@@ -1,5 +1,5 @@
 node_modules/
 web_modules/
 
-/public/dist
-/public/sw.js
+/public/app/dist
+/public/app/sw.js

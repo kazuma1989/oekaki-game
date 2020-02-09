@@ -1,4 +1,4 @@
-import css from '/web_modules/csz.js'
+import css from '/app/web_modules/csz.js'
 
 type Theme = 'default' | 'primary' | 'danger'
 

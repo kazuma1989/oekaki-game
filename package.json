@@ -5,11 +5,11 @@
   "author": "kazuma1989 <kazuma.ebina@quipper.com>",
   "license": "MIT",
   "scripts": {
-    "prepare": "snowpack --optimize --clean --dest ./public/web_modules/",
+    "prepare": "snowpack --optimize --clean --dest ./public/app/web_modules/",
     "start": "concurrently npm:server npm:compile-watch",
     "build": "concurrently npm:compile",
     "test": "tsc",
-    "compile": "tsc --project ./tsconfig-build.json",
+    "compile": "tsc --project ./tsconfig-build.json --outDir ./public/app/dist",
     "postcompile": "workbox injectManifest ./workbox-config.js",
     "compile-watch": "npm run compile -- --watch",
     "server": "live-server ./public",

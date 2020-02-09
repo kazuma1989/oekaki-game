@@ -1,5 +1,5 @@
-import css from '/web_modules/csz.js'
-import { useState, useRef } from '/web_modules/preact/hooks.js'
+import css from '/app/web_modules/csz.js'
+import { useState, useRef } from '/app/web_modules/preact/hooks.js'
 import { useDispatch } from './reducer.js'
 import Button from './Button.js'
 import CloseButton from './CloseButton.js'
