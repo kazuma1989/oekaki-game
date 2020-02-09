@@ -1,4 +1,4 @@
-import css from '/web_modules/csz.js'
+import css from '/app/web_modules/csz.js'
 import { useSelector, useDispatch } from './reducer.js'
 import Button from './Button.js'
 

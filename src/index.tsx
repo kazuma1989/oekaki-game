@@ -1,5 +1,5 @@
-import * as preact from '/web_modules/preact.js'
-import { createStore } from '/web_modules/redux.js'
+import * as preact from '/app/web_modules/preact.js'
+import { createStore } from '/app/web_modules/redux.js'
 import { reducer, Provider } from './reducer.js'
 
 self.React = preact
@@ -23,8 +23,8 @@ Promise.all([importApp, awaitSplash]).then(([{ default: App }]) => {
 })
 
 if ('serviceWorker' in navigator) {
-  import('/web_modules/workbox-window.js').then(({ Workbox }) => {
-    const wb = new Workbox('/sw.js')
+  import('/app/web_modules/workbox-window.js').then(({ Workbox }) => {
+    const wb = new Workbox('/app/sw.js')
 
     // https://developers.google.com/web/tools/workbox/modules/workbox-window#example-cache-urls
     wb.addEventListener('activated', () => {

@@ -1,4 +1,4 @@
-import { useEffect } from '/web_modules/preact/hooks.js'
+import { useEffect } from '/app/web_modules/preact/hooks.js'
 import { useSelector, useDispatch } from './reducer.js'
 import APIGetSheetValues from './APIGetSheetValues.js'
 import OpeningView from './OpeningView.js'

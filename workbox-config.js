@@ -1,6 +1,6 @@
 module.exports = {
-  globDirectory: 'public/',
+  globDirectory: './public/app/',
   globPatterns: ['**/*.{js,html,css}'],
-  swDest: 'public/sw.js',
-  swSrc: 'src/sw.js',
+  swDest: './public/app/sw.js',
+  swSrc: './src/sw.js',
 }
