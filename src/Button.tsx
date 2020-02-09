@@ -1,6 +1,6 @@
 import css from '/app/web_modules/csz.js'
 
-type Theme = 'default' | 'primary' | 'danger'
+export type Theme = 'default' | 'primary' | 'danger'
 
 export default function Button({
   theme = 'default',

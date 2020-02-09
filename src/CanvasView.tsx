@@ -2,7 +2,7 @@ import css from '/app/web_modules/csz.js'
 import { useState, useRef } from '/app/web_modules/preact/hooks.js'
 import { useDispatch, useStore } from './reducer.js'
 import Button from './Button.js'
-import CloseButton from './CloseButton.js'
+import IconButton from './IconButton.js'
 
 export default function CanvasView() {
   const dispatch = useDispatch()
@@ -98,7 +98,10 @@ export default function CanvasView() {
 
   return (
     <div className={style}>
-      <CloseButton floating data-label="&#x1F4A3;" onClick={undo} />
+      <div className={styleFloating}>
+        <IconButton label="↩️" onClick={undo} />
+        <IconButton label="💣" onClick={clearAll} />
+      </div>
 
       <div className={styleCanvas}>
         <canvas
@@ -176,6 +179,17 @@ const style = css`
     'button button' 15%
     / 50% 50%;
   gap: 2vw 0;
+`
+
+const styleFloating = css`
+  position: fixed;
+  top: 2vw;
+  right: 2vw;
+  z-index: 10;
+
+  > :not(:last-child) {
+    margin-right: 2vw;
+  }
 `
 
 const styleCanvas = css`
