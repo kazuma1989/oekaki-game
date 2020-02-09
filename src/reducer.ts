@@ -19,6 +19,8 @@ type State = {
     mainText: string
     subText: string
   }[]
+
+  drawingHistory: (['start' | 'draw', number, number] | ['clear'])[]
 }
 
 type Action =
@@ -61,6 +63,23 @@ type Action =
         sheetValues: (string | boolean)[][]
       }
     }
+  | {
+      type: 'draw.start'
+      payload: {
+        x: number
+        y: number
+      }
+    }
+  | {
+      type: 'draw.draw'
+      payload: {
+        x: number
+        y: number
+      }
+    }
+  | {
+      type: 'draw.clear'
+    }
 
 const { Provider, useDispatch, useSelector, useStore } = createReduxHooks<
   Store<State, Action>
@@ -80,64 +99,78 @@ export const reducer: (state: State, action: Action) => State = produce(
         loadingState: 'initial',
         questions: [],
         tutorialQuestions: [],
+        drawingHistory: [],
       }
     }
 
     switch (action.type) {
-      case 'showResult':
+      case 'showResult': {
         state.viewMode = 'result'
         break
+      }
 
-      case 'closeResult':
+      case 'closeResult': {
         state.viewMode = 'game'
         break
+      }
 
-      case 'startDrawing':
+      case 'startDrawing': {
         state.viewMode = 'canvas'
         break
+      }
 
-      case 'startGame':
+      case 'startGame': {
         state.tutorial = false
         state.viewMode = 'game'
         break
+      }
 
-      case 'startTutorial':
+      case 'startTutorial': {
         state.tutorial = true
         state.viewMode = 'game'
         break
+      }
 
-      case 'passQuestion':
+      case 'passQuestion': {
         state.viewMode = 'game'
         state.questionState = 'passed'
         state.passCount += 1
+        state.drawingHistory = []
         break
+      }
 
-      case 'correctQuestion':
+      case 'correctQuestion': {
         state.viewMode = 'game'
         state.questionState = 'correct'
         state.correctCount += 1
+        state.drawingHistory = []
         break
+      }
 
-      case 'goToNextQuestion':
+      case 'goToNextQuestion': {
         state.questionState = 'drawing'
         break
+      }
 
-      case 'resetGame':
+      case 'resetGame': {
         state.viewMode = 'opening'
         state.questionState = 'drawing'
         state.passCount = 0
         state.correctCount = 0
         break
+      }
 
-      case 'APIGetSheetValues.Start':
+      case 'APIGetSheetValues.Start': {
         state.loadingState = 'loading'
         break
+      }
 
-      case 'APIGetSheetValues.Reload':
+      case 'APIGetSheetValues.Reload': {
         state.loadingState = 'waiting'
         break
+      }
 
-      case 'APIGetSheetValues.Complete':
+      case 'APIGetSheetValues.Complete': {
         const { sheetValues } = action.payload
 
         state.loadingState = 'complete'
@@ -160,9 +193,30 @@ export const reducer: (state: State, action: Action) => State = produce(
         state.questions = shuffle(parsed.filter(q => !q.forTutorial))
         state.tutorialQuestions = shuffle(parsed.filter(q => q.forTutorial))
         break
+      }
 
-      default:
+      case 'draw.start': {
+        const { x, y } = action.payload
+
+        state.drawingHistory.push(['start', x, y])
+        break
+      }
+
+      case 'draw.draw': {
+        const { x, y } = action.payload
+
+        state.drawingHistory.push(['draw', x, y])
+        break
+      }
+
+      case 'draw.clear': {
+        state.drawingHistory.push(['clear'])
+        break
+      }
+
+      default: {
         const _: never = action
+      }
     }
   },
 )

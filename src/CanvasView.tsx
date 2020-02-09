@@ -16,6 +16,7 @@ export default function CanvasView() {
     if (!ctx) return
 
     setDrawing(true)
+    dispatch({ type: 'draw.start', payload: { x, y } })
 
     // Draw a dot
     const dotSize = ctx.lineWidth * 3
@@ -31,6 +32,8 @@ export default function CanvasView() {
     const ctx = ctxRef.current
     if (!ctx) return
 
+    dispatch({ type: 'draw.draw', payload: { x, y } })
+
     ctx.lineTo(x, y)
     ctx.stroke()
   }
@@ -40,6 +43,8 @@ export default function CanvasView() {
   const clearAll = () => {
     const ctx = ctxRef.current
     if (!ctx) return
+
+    dispatch({ type: 'draw.clear' })
 
     const { width, height } = ctx.canvas
     ctx.clearRect(0, 0, width, height)
