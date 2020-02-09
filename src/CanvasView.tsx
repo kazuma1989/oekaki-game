@@ -1,6 +1,6 @@
 import css from '/app/web_modules/csz.js'
 import { useState, useRef } from '/app/web_modules/preact/hooks.js'
-import { useDispatch } from './reducer.js'
+import { useDispatch, useStore } from './reducer.js'
 import Button from './Button.js'
 import CloseButton from './CloseButton.js'
 
@@ -50,9 +50,55 @@ export default function CanvasView() {
     ctx.clearRect(0, 0, width, height)
   }
 
+  const store = useStore()
+  const undo = () => {
+    const ctx = ctxRef.current
+    if (!ctx) return
+
+    dispatch({ type: 'draw.undo' })
+
+    const { width, height } = ctx.canvas
+    ctx.clearRect(0, 0, width, height)
+
+    store.getState().drawingHistory.forEach(action => {
+      switch (action[0]) {
+        case 'start': {
+          const [, x, y] = action
+
+          // Draw a dot
+          const dotSize = ctx.lineWidth * 3
+          ctx.fillRect(x - dotSize / 2, y - dotSize / 2, dotSize, dotSize)
+
+          // Start a path
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+          break
+        }
+
+        case 'draw': {
+          const [, x, y] = action
+
+          ctx.lineTo(x, y)
+          ctx.stroke()
+          break
+        }
+
+        case 'clear': {
+          const { width, height } = ctx.canvas
+          ctx.clearRect(0, 0, width, height)
+          break
+        }
+
+        default: {
+          const _: never = action
+        }
+      }
+    })
+  }
+
   return (
     <div className={style}>
-      <CloseButton floating data-label="&#x1F4A3;" onClick={clearAll} />
+      <CloseButton floating data-label="&#x1F4A3;" onClick={undo} />
 
       <div className={styleCanvas}>
         <canvas

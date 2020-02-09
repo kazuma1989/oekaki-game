@@ -80,6 +80,9 @@ type Action =
   | {
       type: 'draw.clear'
     }
+  | {
+      type: 'draw.undo'
+    }
 
 const { Provider, useDispatch, useSelector, useStore } = createReduxHooks<
   Store<State, Action>
@@ -211,6 +214,18 @@ export const reducer: (state: State, action: Action) => State = produce(
 
       case 'draw.clear': {
         state.drawingHistory.push(['clear'])
+        break
+      }
+
+      case 'draw.undo': {
+        const targetIndex =
+          state.drawingHistory.length -
+          1 -
+          [...state.drawingHistory]
+            .reverse()
+            .findIndex(([type]) => type === 'start' || type === 'clear')
+
+        state.drawingHistory.splice(targetIndex)
         break
       }
 
