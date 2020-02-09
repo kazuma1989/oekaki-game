@@ -31,15 +31,26 @@
         touch-action: manipulation;
       }
 
-      .credit-view {
-        background-color: #ffd479;
-        font-size: initial;
+      .noscript-alert {
+        margin: 0.5em;
+        color: red;
+        text-align: center;
 
+        position: absolute;
+      }
+
+      .credit-view {
         display: flex;
         flex-flow: column;
         justify-content: center;
         align-items: center;
+
+        font-size: initial;
         text-align: center;
+      }
+      .credit-view-icon {
+        width: 50%;
+        margin: 0.5em;
       }
     </style>
 
@@ -47,14 +58,16 @@
   </head>
 
   <body class="full-height app-screen">
-    <noscript>このアプリを使うには JavaScript をオンにしてください。</noscript>
+    <noscript class="noscript-alert">
+      このアプリを使うには JavaScript をオンにしてください。
+    </noscript>
 
     <div id="root" class="full-height">
       <div class="credit-view full-height">
         <img
+          class="credit-view-icon"
           alt="イーゼルくん"
-          srcset="icons/icon-384x384.png 2x, icons/icon-192x192.png 1x"
-          src="icons/icon-192x192.png"
+          src="icons/easel.svg"
         />
 
         <p>
@@ -63,11 +76,16 @@
             href="https://www.flaticon.com/authors/freepik"
             title="Freepik"
             target="_blank"
+            rel="noopener"
             >Freepik</a
           >
           from
           <br />
-          <a href="https://www.flaticon.com/" title="Flaticon" target="_blank"
+          <a
+            href="https://www.flaticon.com/"
+            title="Flaticon"
+            target="_blank"
+            rel="noopener"
             >www.flaticon.com</a
           >
         </p>
