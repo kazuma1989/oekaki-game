@@ -1,7 +1,7 @@
 import css from '/app/web_modules/csz.js'
 import { useSelector, useDispatch } from './reducer.js'
 import Button from './Button.js'
-import CloseButton from './CloseButton.js'
+import IconButton from './IconButton.js'
 
 export default function ResultView() {
   const dispatch = useDispatch()
@@ -15,7 +15,7 @@ export default function ResultView() {
 
   return (
     <div className={style}>
-      <CloseButton floating onClick={close} />
+      <IconButton className={styleFloating} label="&times;" onClick={close} />
 
       <div className={styleLabel}>結果</div>
 
@@ -42,6 +42,13 @@ const style = css`
   justify-content: center;
   align-content: center;
   align-items: end;
+`
+
+const styleFloating = css`
+  position: fixed;
+  top: 2vw;
+  right: 2vw;
+  z-index: 10;
 `
 
 const styleLabel = css`
