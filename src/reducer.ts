@@ -2,7 +2,7 @@ import produce from '/app/web_modules/immer.js'
 import { Store } from '/app/web_modules/redux.js'
 import { createReduxHooks } from './redux-utils.js'
 
-type State = {
+export type State = {
   viewMode: 'opening' | 'game' | 'canvas' | 'result'
   tutorial: boolean
 
