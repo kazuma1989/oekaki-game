@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "csz": "^1.2.0",
+    "idb-keyval": "^3.2.0",
     "immer": "^5.3.2",
     "preact": "^10.2.1",
     "redux": "^4.0.5",
@@ -33,6 +34,7 @@
   "snowpack": {
     "webDependencies": [
       "csz",
+      "idb-keyval",
       "immer",
       "preact",
       "preact/hooks",

@@ -57,3 +57,10 @@ if (!['127.0.0.1', 'localhost'].includes(location.hostname)) {
       'このサイトを離れてもよろしいですか？行った変更が保存されない可能性があります。'
   })
 }
+
+import('/app/web_modules/idb-keyval.js').then(({ set }) => {
+  // FIXME 実験的（適当）実装
+  store.subscribe(async () => {
+    await set('my-store', store.getState())
+  })
+})
