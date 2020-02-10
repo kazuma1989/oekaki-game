@@ -4,19 +4,20 @@ import { useSelector, useDispatch } from './reducer.js'
 export default function APIGetSheetValues() {
   const dispatch = useDispatch()
 
-  const state = useSelector(state => state.loadingState)
+  const awaitsLoading = useSelector(
+    state =>
+      state.loadingState === 'waiting' || state.loadingState === 'initial',
+  )
 
   useEffect(() => {
-    ;(async () => {
-      if (state !== 'waiting') return
+    if (!awaitsLoading) return
 
-      dispatch({ type: 'APIGetSheetValues.Start' })
+    dispatch({ type: 'APIGetSheetValues.Start' })
 
-      const sheetValues = await fetchSheetValues()
-
+    fetchSheetValues().then(sheetValues => {
       dispatch({ type: 'APIGetSheetValues.Complete', payload: { sheetValues } })
-    })()
-  }, [state])
+    })
+  }, [awaitsLoading])
 
   return null
 }
