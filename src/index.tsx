@@ -2,7 +2,7 @@ import * as idb from '/app/web_modules/idb-keyval.js'
 import * as preact from '/app/web_modules/preact.js'
 import { createStore } from '/app/web_modules/redux.js'
 import { reducer, Provider } from './reducer.js'
-import { debounce } from './utils.js'
+import { debounce, throttle } from './utils.js'
 
 self.React = preact
 const { render } = preact
@@ -21,6 +21,7 @@ import('./App.js').then(async ({ default: App }) => {
   }
   save()
   store.subscribe(debounce(save, 1000))
+  store.subscribe(throttle(save, 12 * 1000))
 
   render(
     <Provider value={store}>
