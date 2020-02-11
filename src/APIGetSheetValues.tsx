@@ -1,12 +1,16 @@
-import { useEffect } from '/app/web_modules/preact/hooks.js'
+import { useEffect, useRef } from '/app/web_modules/preact/hooks.js'
 import { useSelector, useDispatch } from './reducer.js'
 
 export default function APIGetSheetValues() {
   const dispatch = useDispatch()
 
+  const fetching = useRef<ReturnType<typeof fetchSheetValues> | null>(null)
   const awaitsLoading = useSelector(
     state =>
-      state.loadingState === 'waiting' || state.loadingState === 'initial',
+      state.loadingState === 'initial' ||
+      state.loadingState === 'waiting' ||
+      // preload で復帰してきたとき state は loading だが API が呼ばれていない状態になる
+      (state.loadingState === 'loading' && !fetching.current),
   )
 
   useEffect(() => {
@@ -14,7 +18,10 @@ export default function APIGetSheetValues() {
 
     dispatch({ type: 'APIGetSheetValues.Start' })
 
-    fetchSheetValues().then(sheetValues => {
+    fetching.current = fetchSheetValues()
+    fetching.current.then(sheetValues => {
+      fetching.current = null
+
       dispatch({ type: 'APIGetSheetValues.Complete', payload: { sheetValues } })
     })
   }, [awaitsLoading, dispatch])
