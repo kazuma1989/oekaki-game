@@ -10,7 +10,7 @@ import('./App.js').then(async ({ default: App }) => {
   const store = createStore(
     reducer,
     await idb.get('root-state'),
-    (self as any)?.__REDUX_DEVTOOLS_EXTENSION__?.(),
+    self.__REDUX_DEVTOOLS_EXTENSION__?.(),
   )
 
   store.subscribe(throttle(() => idb.set('root-state', store.getState()), 1000))
