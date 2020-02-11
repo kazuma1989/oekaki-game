@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" class="full-height">
+<html lang="ja" class="cover-screen">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,14 +19,17 @@
 
     <link
       rel="stylesheet"
+      crossorigin="anonymous"
       href="https://unpkg.com/ress@2.0.4/dist/ress.min.css"
     />
     <link rel="stylesheet" href="style.css" />
     <style>
-      .full-height {
+      .cover-screen {
+        width: 100%;
         height: 100%;
       }
       .app-screen {
+        position: fixed;
         overflow: hidden;
         touch-action: manipulation;
       }
@@ -57,13 +60,13 @@
     <script type="module" src="dist/index.js"></script>
   </head>
 
-  <body class="full-height app-screen">
+  <body class="app-screen cover-screen">
     <noscript class="noscript-alert">
       このアプリを使うには JavaScript をオンにしてください。
     </noscript>
 
-    <div id="root" class="full-height">
-      <div class="credit-view full-height">
+    <div id="root" class="cover-screen">
+      <div class="credit-view cover-screen">
         <img
           class="credit-view-icon"
           alt="イーゼルくん"

@@ -1,19 +1,20 @@
+import * as idb from '/app/web_modules/idb-keyval.js'
 import * as preact from '/app/web_modules/preact.js'
 import { createStore } from '/app/web_modules/redux.js'
 import { reducer, Provider } from './reducer.js'
+import { throttle } from './utils.js'
 
 self.React = preact
 
-const store = createStore(
-  reducer,
-  undefined,
-  (self as any)?.__REDUX_DEVTOOLS_EXTENSION__?.(),
-)
+import('./App.js').then(async ({ default: App }) => {
+  const store = createStore(
+    reducer,
+    await idb.get('root-state'),
+    (self as any)?.__REDUX_DEVTOOLS_EXTENSION__?.(),
+  )
 
-const importApp = import('./App.js')
-const awaitSplash = new Promise<void>(resolve => setTimeout(resolve, 400))
+  store.subscribe(throttle(() => idb.set('root-state', store.getState()), 1000))
 
-Promise.all([importApp, awaitSplash]).then(([{ default: App }]) => {
   preact.render(
     <Provider value={store}>
       <App />
@@ -42,18 +43,5 @@ if ('serviceWorker' in navigator) {
     })
 
     wb.register()
-  })
-}
-
-if (!['127.0.0.1', 'localhost'].includes(location.hostname)) {
-  // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
-  window.addEventListener('beforeunload', event => {
-    console.log('beforeunload')
-
-    event.preventDefault()
-    // Chrome requires returnValue to be set.
-    // が、とくに設定した文字が表示されるわけでもない
-    event.returnValue =
-      'このサイトを離れてもよろしいですか？行った変更が保存されない可能性があります。'
   })
 }

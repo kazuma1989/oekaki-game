@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" class="full-height">
+<html lang="ja" class="cover-screen">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,11 +13,13 @@
 
     <link
       rel="stylesheet"
+      crossorigin="anonymous"
       href="https://unpkg.com/ress@2.0.4/dist/ress.min.css"
     />
     <link rel="stylesheet" href="/app/style.css" />
     <style>
-      .full-height {
+      .cover-screen {
+        width: 100%;
         height: 100%;
       }
 
@@ -54,37 +56,31 @@
     </style>
   </head>
 
-  <body class="full-height">
-    <div id="root" class="full-height">
-      <div class="credit-view full-height">
-        <img
-          class="credit-view-icon"
-          alt="イーゼルくん"
-          src="/icons/easel.svg"
-        />
+  <body class="cover-screen">
+    <div class="credit-view cover-screen">
+      <img class="credit-view-icon" alt="イーゼルくん" src="/icons/easel.svg" />
 
-        <p>
-          Icons made by
-          <a
-            href="https://www.flaticon.com/authors/freepik"
-            title="Freepik"
-            target="_blank"
-            rel="noopener"
-            >Freepik</a
-          >
-          from
-          <br />
-          <a
-            href="https://www.flaticon.com/"
-            title="Flaticon"
-            target="_blank"
-            rel="noopener"
-            >www.flaticon.com</a
-          >
-        </p>
-      </div>
-
-      <a class="app-start-button" href="/app/">アプリを起動</a>
+      <p>
+        Icons made by
+        <a
+          href="https://www.flaticon.com/authors/freepik"
+          title="Freepik"
+          target="_blank"
+          rel="noopener"
+          >Freepik</a
+        >
+        from
+        <br />
+        <a
+          href="https://www.flaticon.com/"
+          title="Flaticon"
+          target="_blank"
+          rel="noopener"
+          >www.flaticon.com</a
+        >
+      </p>
     </div>
+
+    <a class="app-start-button" href="/app/">アプリを起動</a>
   </body>
 </html>
