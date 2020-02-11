@@ -3,6 +3,7 @@ import { useRef, useEffect } from '/app/web_modules/preact/hooks.js'
 import { useDispatch, useStore } from './reducer.js'
 import Button from './Button.js'
 import IconButton from './IconButton.js'
+import Canvas, { Context2D } from './Canvas.js'
 
 export default function CanvasView() {
   const dispatch = useDispatch()
@@ -70,38 +71,8 @@ export default function CanvasView() {
         <IconButton label="💣" onClick={clearAll} />
       </div>
 
-      <div className={styleCanvas}>
-        <canvas
-          ref={ctx.init}
-          onMouseDown={e => startDrawing(e.offsetX, e.offsetY)}
-          onMouseMove={e => draw(e.offsetX, e.offsetY)}
-          // 終了を検知しなくてもなんだかうまくいった
-          // onMouseUp={finishDrawing}
-          // onMouseLeave={finishDrawing}
-          onTouchStart={e => {
-            e.preventDefault()
-
-            const { touches } = e
-            if (touches.length !== 1) return
-
-            const [touch] = touches
-            // FIXME 雑な座標取得
-            startDrawing(touch.clientX, touch.clientY)
-          }}
-          onTouchMove={e => {
-            e.preventDefault()
-
-            const { touches } = e
-            if (touches.length !== 1) return
-
-            const [touch] = touches
-            // FIXME 雑な座標取得
-            draw(touch.clientX, touch.clientY)
-          }}
-          // 終了を検知しなくてもなんだかうまくいった
-          // onTouchEnd={finishDrawing}
-          // onTouchCancel={finishDrawing}
-        />
+      <div className={styleCanvasContainer}>
+        <Canvas ctx={ctx} onPointStart={startDrawing} onPointMove={draw} />
       </div>
 
       <Button className={styleButton} label="パス" onClick={passQuestion} />
@@ -113,76 +84,6 @@ export default function CanvasView() {
       />
     </div>
   )
-}
-
-type Ref<T> = { current: T }
-
-class Context2D {
-  constructor(private readonly ref: Ref<CanvasRenderingContext2D | null>) {
-    // `ref={ctx.init}` の形で呼ぶため
-    this.init = this.init.bind(this)
-  }
-
-  init(canvas: HTMLCanvasElement | null) {
-    if (!canvas) return
-
-    if (!this.ref.current) {
-      this.ref.current = canvas.getContext('2d')
-    }
-
-    // canvas.clientWidth/Height が計算されてからサイズ確定処理をする
-    // そうしないと 0x0 の canvas になってしまって絵が描けない
-    requestAnimationFrame(() => {
-      // width か height が 0 だと canvas のレンダリングがまだかもしれない
-      if (!canvas.clientWidth || !canvas.clientHeight) return
-      // width/height を必要以上に再設定すると、描いている絵が消えてしまう
-      if (
-        canvas.width === canvas.clientWidth &&
-        canvas.height === canvas.clientHeight
-      )
-        return
-
-      canvas.width = canvas.clientWidth
-      canvas.height = canvas.clientHeight
-    })
-  }
-
-  start(x: number, y: number) {
-    this.drawDot(x, y)
-    this.beginPath(x, y)
-  }
-
-  strokeTo(x: number, y: number) {
-    const ctx = this.ref.current
-    if (!ctx) return
-
-    ctx.lineTo(x, y)
-    ctx.stroke()
-  }
-
-  clear() {
-    const ctx = this.ref.current
-    if (!ctx) return
-
-    const { width, height } = ctx.canvas
-    ctx.clearRect(0, 0, width, height)
-  }
-
-  private drawDot(x: number, y: number) {
-    const ctx = this.ref.current
-    if (!ctx) return
-
-    const dotSize = ctx.lineWidth * 3
-    ctx.fillRect(x - dotSize / 2, y - dotSize / 2, dotSize, dotSize)
-  }
-
-  private beginPath(x: number, y: number) {
-    const ctx = this.ref.current
-    if (!ctx) return
-
-    ctx.beginPath()
-    ctx.moveTo(x, y)
-  }
 }
 
 const style = css`
@@ -208,16 +109,8 @@ const styleFloating = css`
   }
 `
 
-const styleCanvas = css`
+const styleCanvasContainer = css`
   grid-area: canvas;
-
-  > canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-
-    user-select: none;
-  }
 `
 
 const styleButton = css`
