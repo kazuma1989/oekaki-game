@@ -1,16 +1,16 @@
 import css from '/app/web_modules/csz.js'
-import { useRef, useEffect } from '/app/web_modules/preact/hooks.js'
+import { useEffect } from '/app/web_modules/preact/hooks.js'
 import { useDispatch, useStore } from './reducer.js'
 import Button from './Button.js'
 import IconButton from './IconButton.js'
-import Canvas, { Context2D } from './Canvas.js'
+import Canvas, { useContext2D } from './Canvas.js'
 
 export default function CanvasView() {
   const dispatch = useDispatch()
   const passQuestion = () => dispatch({ type: 'passQuestion' })
   const correctQuestion = () => dispatch({ type: 'correctQuestion' })
 
-  const ctx = new Context2D(useRef<CanvasRenderingContext2D | null>(null))
+  const ctx = useContext2D()
   const startDrawing = (x: number, y: number) => {
     dispatch({ type: 'draw.start', payload: { x, y } })
     ctx.start(x, y)

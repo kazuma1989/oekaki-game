@@ -1,5 +1,5 @@
 import css from '/app/web_modules/csz.js'
-import { useRef, useEffect } from '/app/web_modules/preact/hooks.js'
+import { useRef, useMemo } from '/app/web_modules/preact/hooks.js'
 
 export default function Canvas({
   ctx,
@@ -57,9 +57,15 @@ const style = css`
   user-select: none;
 `
 
+export function useContext2D(): Context2D {
+  const ref = useRef<CanvasRenderingContext2D | null>(null)
+
+  return useMemo(() => new Context2D(ref), [])
+}
+
 type Ref<T> = { current: T }
 
-export class Context2D {
+class Context2D {
   constructor(private readonly ref: Ref<CanvasRenderingContext2D | null>) {
     // `ref={ctx.init}` の形で呼ぶため
     this.init = this.init.bind(this)
