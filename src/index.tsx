@@ -2,6 +2,7 @@ import * as idb from '/app/web_modules/idb-keyval.js'
 import * as preact from '/app/web_modules/preact.js'
 import { createStore } from '/app/web_modules/redux.js'
 import { reducer, Provider } from './reducer.js'
+import { throttle } from './utils.js'
 
 self.React = preact
 
@@ -12,8 +13,9 @@ import('./App.js').then(async ({ default: App }) => {
     (self as any)?.__REDUX_DEVTOOLS_EXTENSION__?.(),
   )
 
-  // TODO throttle
-  store.subscribe(() => idb.set('root-state', store.getState()))
+  store.subscribe(
+    throttle(() => idb.set('root-state', store.getState()), 10 * 1000),
+  )
 
   preact.render(
     <Provider value={store}>
