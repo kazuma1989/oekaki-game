@@ -1,5 +1,5 @@
 import css from '/app/web_modules/csz.js'
-import { useState, useRef } from '/app/web_modules/preact/hooks.js'
+import { useState, useRef, useEffect } from '/app/web_modules/preact/hooks.js'
 import { useDispatch, useStore } from './reducer.js'
 import Button from './Button.js'
 import IconButton from './IconButton.js'
@@ -10,8 +10,7 @@ export default function CanvasView() {
   const correctQuestion = () => dispatch({ type: 'correctQuestion' })
 
   const [drawing, setDrawing] = useState(false)
-  const ref = useRef<CanvasRenderingContext2D | null>(null)
-  const ctx = new Context2D(ref)
+  const ctx = new Context2D(useRef<CanvasRenderingContext2D | null>(null))
   const startDrawing = (x: number, y: number) => {
     setDrawing(true)
     dispatch({ type: 'draw.start', payload: { x, y } })
@@ -32,9 +31,7 @@ export default function CanvasView() {
   }
 
   const store = useStore()
-  const undo = () => {
-    dispatch({ type: 'draw.undo' })
-
+  const redraw = () => {
     ctx.clear()
 
     store.getState().drawingHistory.forEach(action => {
@@ -64,6 +61,12 @@ export default function CanvasView() {
       }
     })
   }
+  const undo = () => {
+    dispatch({ type: 'draw.undo' })
+    redraw()
+  }
+
+  useEffect(redraw, [])
 
   return (
     <div className={style}>
@@ -74,7 +77,7 @@ export default function CanvasView() {
 
       <div className={styleCanvas}>
         <canvas
-          ref={canvas => ctx.init(canvas)}
+          ref={ctx.init}
           onMouseDown={e => startDrawing(e.offsetX, e.offsetY)}
           onMouseMove={e => draw(e.offsetX, e.offsetY)}
           onMouseUp={finishDrawing}
@@ -118,7 +121,10 @@ export default function CanvasView() {
 type Ref<T> = { current: T }
 
 class Context2D {
-  constructor(private readonly ref: Ref<CanvasRenderingContext2D | null>) {}
+  constructor(private readonly ref: Ref<CanvasRenderingContext2D | null>) {
+    // `ref={ctx.init}` の形で呼ぶため
+    this.init = this.init.bind(this)
+  }
 
   init(canvas: HTMLCanvasElement | null) {
     if (!canvas) return
@@ -127,13 +133,19 @@ class Context2D {
       this.ref.current = canvas.getContext('2d')
     }
 
-    if (
-      canvas.width !== canvas.clientWidth &&
-      canvas.height !== canvas.clientHeight
-    ) {
+    // canvas.clientWidth/Height が計算されてからサイズ確定処理をする
+    // そうしないと 0x0 の canvas になってしまって絵が描けない
+    requestAnimationFrame(() => {
+      if (!canvas.clientWidth || !canvas.clientHeight) return
+      if (
+        canvas.width === canvas.clientWidth &&
+        canvas.height === canvas.clientHeight
+      )
+        return
+
       canvas.width = canvas.clientWidth
       canvas.height = canvas.clientHeight
-    }
+    })
   }
 
   start(x: number, y: number) {
