@@ -13,7 +13,8 @@
     "postcompile": "workbox injectManifest ./workbox-config.js",
     "compile-watch": "npm run compile -- --watch",
     "server": "live-server ./public",
-    "format": "prettier --write './src/**/*.{ts,tsx,js}' './public/**/*.{css,html}'"
+    "format": "prettier --write './src/**/*.{ts,tsx,js}' './public/**/*.{css,html}'",
+    "lint-fix": "eslint --fix './src/**/*.{ts,tsx}' --ignore-pattern '*.test.*'"
   },
   "dependencies": {
     "csz": "^1.2.0",
