@@ -177,5 +177,3 @@ const p = data
   .map(v => v.trim())
   .filter(Boolean)
   .map(v => v.split(/\s/g))
-
-console.log(p)
