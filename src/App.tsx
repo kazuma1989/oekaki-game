@@ -26,9 +26,11 @@ export default function App() {
           case 'result':
             return <ResultView />
 
-          default:
+          default: {
             const _: never = viewMode
+
             return <div>ERROR</div>
+          }
         }
       })()}
     </>

@@ -25,6 +25,11 @@
   },
 
   "rules": {
+    // JS のほうのルールは、type や interface を使って **いない** と誤判定するので、無効にする
+    "no-unused-vars": "off",
+
+    // Hooks を安全に使うため
+    // cf. https://reactjs.org/docs/hooks-rules.html#eslint-plugin
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn"
   }

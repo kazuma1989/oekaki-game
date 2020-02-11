@@ -17,7 +17,7 @@ export default function APIGetSheetValues() {
     fetchSheetValues().then(sheetValues => {
       dispatch({ type: 'APIGetSheetValues.Complete', payload: { sheetValues } })
     })
-  }, [awaitsLoading])
+  }, [awaitsLoading, dispatch])
 
   return null
 }
