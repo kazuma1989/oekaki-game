@@ -14,8 +14,6 @@ export default function Canvas({
   onPointEnd?(x: number, y: number): void
   className?: string
 }) {
-  // const ref = useRef<HTMLCanvasElement>()
-
   return (
     <canvas
       className={`${style} ${className}`}
@@ -40,6 +38,10 @@ function mouse(handler?: (x: number, y: number) => void) {
 
 function touch(handler?: (x: number, y: number) => void) {
   return (e: TouchEvent) => {
+    // 点を 1 つだけ描画したいのに start -> draw -> start の 3 イベントが
+    // 同時に発生してしまい、undo の回数が感覚より多くなってしまうのを防ぐ
+    e.preventDefault()
+
     const { touches } = e
     if (touches.length !== 1) return
 
