@@ -1,5 +1,5 @@
 import css from '/app/web_modules/csz.js'
-import { useState, useRef, useEffect } from '/app/web_modules/preact/hooks.js'
+import { useRef, useEffect } from '/app/web_modules/preact/hooks.js'
 import { useDispatch, useStore } from './reducer.js'
 import Button from './Button.js'
 import IconButton from './IconButton.js'
@@ -9,21 +9,14 @@ export default function CanvasView() {
   const passQuestion = () => dispatch({ type: 'passQuestion' })
   const correctQuestion = () => dispatch({ type: 'correctQuestion' })
 
-  const [drawing, setDrawing] = useState(false)
   const ctx = new Context2D(useRef<CanvasRenderingContext2D | null>(null))
   const startDrawing = (x: number, y: number) => {
-    setDrawing(true)
     dispatch({ type: 'draw.start', payload: { x, y } })
     ctx.start(x, y)
   }
   const draw = (x: number, y: number) => {
-    if (!drawing) return
-
     dispatch({ type: 'draw.draw', payload: { x, y } })
     ctx.strokeTo(x, y)
-  }
-  const finishDrawing = () => {
-    setDrawing(false)
   }
   const clearAll = () => {
     dispatch({ type: 'draw.clear' })
@@ -63,9 +56,11 @@ export default function CanvasView() {
   }
   const undo = () => {
     dispatch({ type: 'draw.undo' })
+    // dispatch で state を変更してから再描画
     redraw()
   }
 
+  // 画面リロード後、履歴データが残っていればそれを復活させる
   useEffect(redraw, [])
 
   return (
@@ -80,8 +75,9 @@ export default function CanvasView() {
           ref={ctx.init}
           onMouseDown={e => startDrawing(e.offsetX, e.offsetY)}
           onMouseMove={e => draw(e.offsetX, e.offsetY)}
-          onMouseUp={finishDrawing}
-          onMouseLeave={finishDrawing}
+          // 終了を検知しなくてもなんだかうまくいった
+          // onMouseUp={finishDrawing}
+          // onMouseLeave={finishDrawing}
           onTouchStart={e => {
             e.preventDefault()
 
@@ -102,8 +98,9 @@ export default function CanvasView() {
             // FIXME 雑な座標取得
             draw(touch.clientX, touch.clientY)
           }}
-          onTouchEnd={finishDrawing}
-          onTouchCancel={finishDrawing}
+          // 終了を検知しなくてもなんだかうまくいった
+          // onTouchEnd={finishDrawing}
+          // onTouchCancel={finishDrawing}
         />
       </div>
 
@@ -136,7 +133,9 @@ class Context2D {
     // canvas.clientWidth/Height が計算されてからサイズ確定処理をする
     // そうしないと 0x0 の canvas になってしまって絵が描けない
     requestAnimationFrame(() => {
+      // width か height が 0 だと canvas のレンダリングがまだかもしれない
       if (!canvas.clientWidth || !canvas.clientHeight) return
+      // width/height を必要以上に再設定すると、描いている絵が消えてしまう
       if (
         canvas.width === canvas.clientWidth &&
         canvas.height === canvas.clientHeight
