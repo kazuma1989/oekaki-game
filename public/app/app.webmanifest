@@ -1,11 +1,11 @@
 {
+  "scope": "/app/",
   "name": "お絵かき お題当て",
   "short_name": "お絵かき",
+  "start_url": "/app/",
   "theme_color": "white",
   "background_color": "white",
   "display": "standalone",
-  "scope": "/app/",
-  "start_url": "/app/",
   "icons": [
     {
       "src": "/apple-touch-icon.png",
@@ -13,7 +13,7 @@
       "type": "image/png"
     },
     {
-      "src": "/icons/easel-512x512.png",
+      "src": "icons/easel-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
