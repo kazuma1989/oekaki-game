@@ -14,7 +14,7 @@
     "compile-watch": "npm run compile -- --watch",
     "server": "live-server ./public",
     "format": "prettier --write './src/**/*.{ts,tsx,js}' './public/**/*.{css,html}'",
-    "lint-fix": "eslint --fix './src/**/*.{ts,tsx}' --ignore-pattern '*.test.*'"
+    "lint-fix": "eslint --fix './src/**/*.{ts,tsx}'"
   },
   "dependencies": {
     "csz": "^1.2.0",
