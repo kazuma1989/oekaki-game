@@ -1,23 +1,24 @@
-import * as idb from '/app/web_modules/idb-keyval.js'
 import * as preact from '/app/web_modules/preact.js'
 import { createStore } from '/app/web_modules/redux.js'
-import { reducer, Provider } from './reducer.js'
+import { reducer, Provider, State } from './reducer.js'
+import StateStorage from './StateStorage.js'
 import { debounce, throttle } from './utils.js'
 
 self.React = preact
 const { render } = preact
 
-import('./App.js').then(async ({ default: App }) => {
+import('./App.js').then(({ default: App }) => {
+  const storage = new StateStorage<State>()
+
   const store = createStore(
     reducer,
-    await idb.get('root-state'),
+    storage.get(),
     self.__REDUX_DEVTOOLS_EXTENSION__?.(),
   )
 
-  const save = async () => {
-    console.debug('root-state:', 'saving...')
-    await idb.set('root-state', store.getState())
-    console.debug('root-state:', 'saved')
+  const save = () => {
+    storage.set(store.getState())
+    console.debug(`${storage.key}: saved`)
   }
   save()
   store.subscribe(debounce(save, 1000))
