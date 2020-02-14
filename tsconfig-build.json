@@ -2,6 +2,10 @@
   "extends": "./tsconfig",
 
   "compilerOptions": {
+    // Generate source maps including their original sources.
+    "sourceMap": true,
+    "inlineSources": true,
+
     // Redirect output structure to a directory.
     // The directory is defined in the package.json#scripts.
     "noEmit": false
