@@ -16,10 +16,7 @@ import('./App.js').then(({ default: App }) => {
     self.__REDUX_DEVTOOLS_EXTENSION__?.(),
   )
 
-  const save = () => {
-    storage.set(store.getState())
-    console.debug(`${storage.key}: saved`)
-  }
+  const save = () => storage.set(store.getState())
   save()
   store.subscribe(debounce(save, 1000))
   store.subscribe(throttle(save, 12 * 1000))

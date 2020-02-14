@@ -32,6 +32,7 @@ export default class StateStorage<T> {
         this.key,
         `[${stateJSON},${JSON.stringify(integrity)}]`,
       )
+      console.debug(`${this.key}: saved`)
     } catch (e) {
       console.warn(e)
     }
