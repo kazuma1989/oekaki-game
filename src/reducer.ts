@@ -107,21 +107,23 @@ const { Provider, useDispatch, useSelector, useStore } = createReduxHooks<
 
 export { Provider, useDispatch, useSelector, useStore }
 
+const initialState: State = {
+  viewMode: 'opening',
+  tutorial: false,
+  questionState: 'drawing',
+  passCount: 0,
+  correctCount: 0,
+  loadingState: 'initial',
+  questions: [],
+  tutorialQuestions: [],
+  drawingHistory: [],
+  cacheClearingState: 'initial',
+}
+
 export const reducer: (state: State, action: Action) => State = produce(
   (state: State | undefined, action: Action): void | State => {
     if (!state) {
-      return {
-        viewMode: 'opening',
-        tutorial: false,
-        questionState: 'drawing',
-        passCount: 0,
-        correctCount: 0,
-        loadingState: 'initial',
-        questions: [],
-        tutorialQuestions: [],
-        drawingHistory: [],
-        cacheClearingState: 'initial',
-      }
+      return initialState
     }
 
     switch (action.type) {
@@ -146,9 +148,10 @@ export const reducer: (state: State, action: Action) => State = produce(
       }
 
       case 'clearCache.Complete': {
-        state.cacheClearingState = 'complete'
-        state.viewMode = 'opening'
-        break
+        return {
+          ...initialState,
+          cacheClearingState: 'complete',
+        }
       }
 
       case 'showResult': {
