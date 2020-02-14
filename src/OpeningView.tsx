@@ -1,12 +1,14 @@
 import css from '/app/web_modules/csz.js'
 import { useSelector, useDispatch } from './reducer.js'
 import Button from './Button.js'
+import IconButton from './IconButton.js'
 
 export default function OpeningView() {
   const dispatch = useDispatch()
   const reload = () => dispatch({ type: 'APIGetSheetValues.Reload' })
   const startTutorial = () => dispatch({ type: 'startTutorial' })
   const startGame = () => dispatch({ type: 'startGame' })
+  const showConfig = () => dispatch({ type: 'openConfig' })
 
   const loading = useSelector(state => state.loadingState === 'loading')
 
@@ -32,6 +34,8 @@ export default function OpeningView() {
         disabled={loading}
         onClick={startGame}
       />
+
+      <IconButton className={styleFloating} label="⚙️" onClick={showConfig} />
     </div>
   )
 }
@@ -59,4 +63,11 @@ const styleTitle = css`
 
 const styleButton = css`
   padding: 4vw;
+`
+
+const styleFloating = css`
+  position: fixed;
+  top: 2vw;
+  right: 2vw;
+  z-index: 10;
 `

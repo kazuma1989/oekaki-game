@@ -3,6 +3,7 @@ import { createStore } from '/app/web_modules/redux.js'
 import { reducer, Provider, State } from './reducer.js'
 import StateStorage from './StateStorage.js'
 import { debounce, throttle } from './utils.js'
+import CacheClear from './CacheClear.js'
 
 self.React = preact
 const { render } = preact
@@ -23,6 +24,8 @@ import('./App.js').then(({ default: App }) => {
 
   render(
     <Provider value={store}>
+      <CacheClear storage={storage} />
+
       <App />
     </Provider>,
     document.getElementById('root')!,
