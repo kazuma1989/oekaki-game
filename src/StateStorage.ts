@@ -2,34 +2,36 @@ export default class StateStorage<T> {
   constructor(
     readonly storage: Storage = localStorage,
     readonly key = `${StateStorage.name}.root-state`,
-    readonly integrityKey = `${StateStorage.name}.integrity`,
   ) {}
 
   get(): T | undefined {
     try {
-      const value = this.storage.getItem(this.key)
-      if (!value) return
+      const [state, integrity]: [unknown, unknown] =
+        JSON.parse(this.storage.getItem(this.key) ?? 'null') ?? []
+      if (!state) return
 
-      const integrity = this.storage.getItem(this.integrityKey)
-      if (integrity !== integrityOf(value)) {
-        console.debug(`${this.key}: wrong integrity`)
-        return
+      const stateJSON = JSON.stringify(state)
+      if (integrityOf(stateJSON) !== integrity) {
+        throw 'wrong integrity'
       }
 
-      return JSON.parse(value)
+      return state as T
     } catch (e) {
       console.warn(e)
 
       this.storage.removeItem(this.key)
-      this.storage.removeItem(this.integrityKey)
     }
   }
 
   set(state: T): void {
     try {
-      const value = JSON.stringify(state)
-      this.storage.setItem(this.key, value)
-      this.storage.setItem(this.integrityKey, integrityOf(value))
+      const stateJSON = JSON.stringify(state)
+      const integrity = integrityOf(stateJSON)
+
+      this.storage.setItem(
+        this.key,
+        `[${stateJSON},${JSON.stringify(integrity)}]`,
+      )
     } catch (e) {
       console.warn(e)
     }
