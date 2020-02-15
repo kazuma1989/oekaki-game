@@ -1,3 +1,6 @@
+// @ts-check
+/// <reference path="./gas.d.ts" />
+
 function doGet() {
   return ContentService.createTextOutput(
     JSON.stringify(
