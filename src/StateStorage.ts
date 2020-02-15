@@ -1,4 +1,4 @@
-export default class StateStorage<T> {
+export default class StateStorage<T = unknown> {
   constructor(
     readonly storage: Storage = localStorage,
     readonly key = `${StateStorage.name}.root-state`,
@@ -19,7 +19,7 @@ export default class StateStorage<T> {
     } catch (e) {
       console.warn(e)
 
-      this.storage.removeItem(this.key)
+      this.clear()
     }
   }
 
@@ -33,6 +33,14 @@ export default class StateStorage<T> {
         `[${stateJSON},${JSON.stringify(integrity)}]`,
       )
       console.debug(`${this.key}: saved`)
+    } catch (e) {
+      console.warn(e)
+    }
+  }
+
+  clear(): void {
+    try {
+      this.storage.removeItem(this.key)
     } catch (e) {
       console.warn(e)
     }

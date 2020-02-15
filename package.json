@@ -12,7 +12,7 @@
     "compile": "tsc --project ./tsconfig-build.json --outDir ./public/app/dist",
     "postcompile": "workbox injectManifest ./workbox-config.js",
     "compile-watch": "npm run compile -- --watch",
-    "server": "live-server ./public",
+    "server": "live-server --quiet ./public",
     "format": "prettier --write './src/**/*.{ts,tsx,js}' './public/**/*.{css,html}'",
     "lint-fix": "eslint --fix './src/**/*.{ts,tsx}'"
   },

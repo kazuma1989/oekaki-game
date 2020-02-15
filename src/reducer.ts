@@ -3,7 +3,7 @@ import { Store } from '/app/web_modules/redux.js'
 import { createReduxHooks } from './redux-utils.js'
 
 export type State = {
-  viewMode: 'opening' | 'game' | 'canvas' | 'result'
+  viewMode: 'opening' | 'config' | 'game' | 'canvas' | 'result'
   tutorial: boolean
 
   questionState: 'drawing' | 'passed' | 'correct'
@@ -21,9 +21,26 @@ export type State = {
   }[]
 
   drawingHistory: (['start' | 'draw', number, number] | ['clear'])[]
+
+  cacheClearingState: 'initial' | 'waiting' | 'loading' | 'complete' | 'error'
 }
 
 type Action =
+  | {
+      type: 'openConfig'
+    }
+  | {
+      type: 'closeConfig'
+    }
+  | {
+      type: 'clearCache'
+    }
+  | {
+      type: 'clearCache.Start'
+    }
+  | {
+      type: 'clearCache.Complete'
+    }
   | {
       type: 'showResult'
     }
@@ -90,23 +107,53 @@ const { Provider, useDispatch, useSelector, useStore } = createReduxHooks<
 
 export { Provider, useDispatch, useSelector, useStore }
 
+const initialState: State = {
+  viewMode: 'opening',
+  tutorial: false,
+  questionState: 'drawing',
+  passCount: 0,
+  correctCount: 0,
+  loadingState: 'initial',
+  questions: [],
+  tutorialQuestions: [],
+  drawingHistory: [],
+  cacheClearingState: 'initial',
+}
+
 export const reducer: (state: State, action: Action) => State = produce(
   (state: State | undefined, action: Action): void | State => {
     if (!state) {
-      return {
-        viewMode: 'opening',
-        tutorial: false,
-        questionState: 'drawing',
-        passCount: 0,
-        correctCount: 0,
-        loadingState: 'initial',
-        questions: [],
-        tutorialQuestions: [],
-        drawingHistory: [],
-      }
+      return initialState
     }
 
     switch (action.type) {
+      case 'openConfig': {
+        state.viewMode = 'config'
+        break
+      }
+
+      case 'closeConfig': {
+        state.viewMode = 'opening'
+        break
+      }
+
+      case 'clearCache': {
+        state.cacheClearingState = 'waiting'
+        break
+      }
+
+      case 'clearCache.Start': {
+        state.cacheClearingState = 'loading'
+        break
+      }
+
+      case 'clearCache.Complete': {
+        return {
+          ...initialState,
+          cacheClearingState: 'complete',
+        }
+      }
+
       case 'showResult': {
         state.viewMode = 'result'
         break

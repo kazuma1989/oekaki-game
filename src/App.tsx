@@ -4,6 +4,7 @@ import OpeningView from './OpeningView.js'
 import GameView from './GameView.js'
 import CanvasView from './CanvasView.js'
 import ResultView from './ResultView.js'
+import ConfigView from './ConfigView.js'
 
 export default function App() {
   const viewMode = useSelector(state => state.viewMode)
@@ -16,6 +17,9 @@ export default function App() {
         switch (viewMode) {
           case 'opening':
             return <OpeningView />
+
+          case 'config':
+            return <ConfigView />
 
           case 'game':
             return <GameView />
