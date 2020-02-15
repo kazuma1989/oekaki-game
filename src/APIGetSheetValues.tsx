@@ -37,7 +37,7 @@ export type Response = {
 
 async function fetchSheetValues() {
   const data: Response = await fetch(
-    'https://script.google.com/macros/s/AKfycbyp-IRHGH9ZgULsl5j2gs1WD1KS7K8npXDeVYS7sax264JAuaOp/exec',
+    'https://script.google.com/macros/s/AKfycbyp-IRHGH9ZgULsl5j2gs1WD1KS7K8npXDeVYS7sax264JAuaOp/exec?version=v2',
   ).then(r => r.json())
 
   return data
