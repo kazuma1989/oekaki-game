@@ -5,7 +5,7 @@ import StateStorage from './StateStorage.js'
 export default function CacheClear({ storage }: { storage?: StateStorage }) {
   const dispatch = useDispatch()
 
-  const fetching = useRef<Promise<void> | null>(null)
+  const fetching = useRef<Promise<unknown> | null>(null)
   const awaitsLoading = useSelector(
     state =>
       state.cacheClearingState === 'waiting' ||
@@ -18,14 +18,22 @@ export default function CacheClear({ storage }: { storage?: StateStorage }) {
 
     dispatch({ type: 'clearCache.Start' })
 
-    fetching.current = new Promise(resolve =>
-      // stub async
-      setTimeout(resolve, 1000),
-    ).then(() => storage?.clear())
+    fetching.current = Promise.all([
+      navigator.serviceWorker
+        .getRegistrations()
+        .then(registrations =>
+          Promise.all(registrations.map(r => r.unregister())),
+        ),
+      caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))),
+      storage?.clear(),
+    ])
+
     fetching.current.then(() => {
       fetching.current = null
 
       dispatch({ type: 'clearCache.Complete' })
+
+      location.reload()
     })
   }, [awaitsLoading, dispatch, storage])
 
