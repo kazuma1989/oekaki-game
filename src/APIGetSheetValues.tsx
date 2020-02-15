@@ -29,8 +29,14 @@ export default function APIGetSheetValues() {
   return null
 }
 
-async function fetchSheetValues(): Promise<(string | boolean)[][]> {
-  const data: (string | boolean)[][] = await fetch(
+export type Response = {
+  mainText: string
+  subText?: string
+  forTutorial?: boolean
+}[]
+
+async function fetchSheetValues() {
+  const data: Response = await fetch(
     'https://script.google.com/macros/s/AKfycbyp-IRHGH9ZgULsl5j2gs1WD1KS7K8npXDeVYS7sax264JAuaOp/exec',
   ).then(r => r.json())
 

@@ -12,5 +12,17 @@ interface ContentService {
 }
 
 interface SpreadsheetApp {
-  getActive(): any
+  getActive(): Spreadsheet
+}
+
+interface Spreadsheet {
+  getSheetByName(name: string): Sheet
+}
+
+interface Sheet {
+  getDataRange(): Range
+}
+
+interface Range {
+  getValues(): (number | boolean | Date | string)[][]
 }
