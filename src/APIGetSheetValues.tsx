@@ -19,7 +19,7 @@ export default function APIGetSheetValues() {
     dispatch({ type: 'APIGetSheetValues.Start' })
 
     fetching.current = fetchSheetValues()
-    fetching.current.then(sheetValues => {
+    fetching.current.then(({ values: sheetValues }) => {
       fetching.current = null
 
       dispatch({ type: 'APIGetSheetValues.Complete', payload: { sheetValues } })
@@ -30,10 +30,15 @@ export default function APIGetSheetValues() {
 }
 
 export type Response = {
-  mainText: string
-  subText?: string
-  forTutorial?: boolean
-}[]
+  values: {
+    mainText: string
+    subText?: string
+    forTutorial?: boolean
+  }[]
+  totalCount: number
+  perPage: number
+  page: number
+}
 
 async function fetchSheetValues() {
   const data: Response = await fetch(

@@ -21,8 +21,16 @@ interface Spreadsheet {
 
 interface Sheet {
   getDataRange(): Range
+  getRange(
+    row: number,
+    column: number,
+    numRows: number,
+    numColumns: number,
+  ): Range
+  getRange(a1Notation: string): Range
 }
 
 interface Range {
   getValues(): (number | boolean | Date | string)[][]
+  getValue(): number | boolean | Date | string
 }
