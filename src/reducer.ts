@@ -9,6 +9,7 @@ export type State = {
   questionState: 'drawing' | 'passed' | 'correct'
   passCount: number
   correctCount: number
+  gameStartAt: number
 
   loadingState: 'initial' | 'waiting' | 'loading' | 'complete' | 'error'
   questions: {
@@ -52,9 +53,15 @@ type Action =
     }
   | {
       type: 'startGame'
+      payload: {
+        timestamp: number
+      }
     }
   | {
       type: 'startTutorial'
+      payload: {
+        timestamp: number
+      }
     }
   | {
       type: 'passQuestion'
@@ -113,9 +120,12 @@ export { Provider, useDispatch, useSelector, useStore }
 const initialState: State = {
   viewMode: 'opening',
   tutorial: false,
+
   questionState: 'drawing',
   passCount: 0,
   correctCount: 0,
+  gameStartAt: 0,
+
   loadingState: 'initial',
   questions: [],
   tutorialQuestions: [
@@ -123,7 +133,9 @@ const initialState: State = {
     { mainText: '山' },
     { mainText: '川' },
   ],
+
   drawingHistory: [],
+
   cacheClearingState: 'initial',
 }
 
@@ -177,14 +189,20 @@ export const reducer: (state: State, action: Action) => State = produce(
       }
 
       case 'startGame': {
+        const { timestamp } = action.payload
+
         state.tutorial = false
         state.viewMode = 'game'
+        state.gameStartAt = timestamp
         break
       }
 
       case 'startTutorial': {
+        const { timestamp } = action.payload
+
         state.tutorial = true
         state.viewMode = 'game'
+        state.gameStartAt = timestamp
         break
       }
 
@@ -214,6 +232,7 @@ export const reducer: (state: State, action: Action) => State = produce(
         state.questionState = 'drawing'
         state.passCount = 0
         state.correctCount = 0
+        state.gameStartAt = 0
         state.loadingState = 'waiting'
         break
       }
