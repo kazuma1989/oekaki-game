@@ -21,11 +21,7 @@ export default function OpeningView() {
         disabled={loading}
         onClick={reload}
       />
-      <Button
-        label="チュートリアル"
-        disabled={loading}
-        onClick={startTutorial}
-      />
+      <Button label="チュートリアル" onClick={startTutorial} />
 
       <Button
         className={styleButton}

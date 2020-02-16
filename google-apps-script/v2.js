@@ -17,21 +17,20 @@ function v2({ page = 0, perPage = 100 }) {
 
   const activeSheet = SpreadsheetApp.getActive()
   const metaSheet = activeSheet.getSheetByName('meta')
-  const dataSheet = activeSheet.getSheetByName('お題')
+  const dataSheet = activeSheet.getSheetByName('data')
 
   const offset = perPage * page + 1
   const rawValues = dataSheet.getRange(offset + 1, 1, perPage, 4).getValues()
 
   const values = rawValues
-    .map(([mainText, subText, forTutorial, disabled]) => {
-      if (disabled || (!mainText && !subText)) {
+    .map(([mainText, subText]) => {
+      if (!mainText && !subText) {
         return null
       }
 
       return {
         mainText: mainText.toString(),
         subText: subText ? subText.toString() : undefined,
-        forTutorial: forTutorial ? true : undefined,
       }
     })
     .filter(nonNull)

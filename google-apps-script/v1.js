@@ -6,7 +6,7 @@
  */
 function v1() {
   return SpreadsheetApp.getActive()
-    .getSheetByName('お題')
+    .getSheetByName('data')
     .getDataRange()
     .getValues()
 }

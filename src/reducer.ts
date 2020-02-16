@@ -80,7 +80,6 @@ type Action =
         sheetValues: {
           mainText: string
           subText?: string
-          forTutorial?: boolean
         }[]
       }
     }
@@ -119,7 +118,11 @@ const initialState: State = {
   correctCount: 0,
   loadingState: 'initial',
   questions: [],
-  tutorialQuestions: [],
+  tutorialQuestions: [
+    { mainText: '太陽' },
+    { mainText: '山' },
+    { mainText: '川' },
+  ],
   drawingHistory: [],
   cacheClearingState: 'initial',
 }
@@ -228,10 +231,7 @@ export const reducer: (state: State, action: Action) => State = produce(
         const { sheetValues } = action.payload
 
         state.loadingState = 'complete'
-        state.questions = shuffle(sheetValues.filter(q => !q.forTutorial))
-        state.tutorialQuestions = shuffle(
-          sheetValues.filter(q => q.forTutorial),
-        )
+        state.questions = shuffle(sheetValues)
         break
       }
 

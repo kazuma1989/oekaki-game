@@ -33,7 +33,6 @@ export type Response = {
   values: {
     mainText: string
     subText?: string
-    forTutorial?: boolean
   }[]
   totalCount: number
   perPage: number
