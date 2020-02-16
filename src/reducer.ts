@@ -231,7 +231,7 @@ export const reducer: (state: State, action: Action) => State = produce(
         const { sheetValues } = action.payload
 
         state.loadingState = 'complete'
-        state.questions = shuffle(sheetValues)
+        state.questions = sheetValues
         break
       }
 
@@ -272,17 +272,3 @@ export const reducer: (state: State, action: Action) => State = produce(
     }
   },
 )
-
-// https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb
-function shuffle<T>(array: T[]): T[] {
-  const target = [...array]
-
-  for (let i = target.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * i)
-    const temp = target[i]
-    target[i] = target[j]
-    target[j] = temp
-  }
-
-  return target
-}

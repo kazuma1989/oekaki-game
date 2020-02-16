@@ -2,55 +2,48 @@
 /// <reference path="./gas.d.ts" />
 
 /**
- * @param {Object} param
- * @param {number | undefined} param.page
- * @param {number | undefined} param.perPage
  * @returns {import('../src/APIGetSheetValues').Response}
  */
-function v2({ page = 0, perPage = 100 }) {
-  if (!(page >= 0)) {
-    page = 0
-  }
-  if (!(0 <= perPage && perPage <= 100)) {
-    perPage = 100
-  }
+function v2() {
+  const dataSheet = SpreadsheetApp.getActive().getSheetByName('data')
 
-  const activeSheet = SpreadsheetApp.getActive()
-  const metaSheet = activeSheet.getSheetByName('meta')
-  const dataSheet = activeSheet.getSheetByName('data')
+  const rawValues = randomPickFrom(
+    dataSheet
+      .getDataRange()
+      .getValues()
+      // ヘッダーを除外
+      .slice(1),
+    100,
+  )
 
-  const offset = perPage * page + 1
-  const rawValues = dataSheet.getRange(offset + 1, 1, perPage, 4).getValues()
-
-  const values = rawValues
-    .map(([mainText, subText]) => {
-      if (!mainText && !subText) {
-        return null
-      }
-
-      return {
-        mainText: mainText.toString(),
-        subText: subText ? subText.toString() : undefined,
-      }
-    })
-    .filter(nonNull)
-
-  const totalCount =
-    parseInt(
-      metaSheet
-        .getRange('B1')
-        .getValue()
-        .toString(),
-    ) || 0
-
-  return {
-    values,
-    totalCount,
-    page,
-    perPage,
-  }
+  return rawValues.map(([mainText, subText]) => ({
+    mainText: mainText.toString(),
+    subText: subText ? subText.toString() : undefined,
+  }))
 }
 
-function nonNull(value) {
-  return value !== null && value !== undefined
+/**
+ * It MUTATES the array in the params
+ *
+ * @template T
+ * @param {T[]} array
+ * @param {number} limit
+ * @return {T[]} random picked array. length === limit
+ */
+function randomPickFrom(array, limit) {
+  /** @type {T[]} */
+  const picked = []
+
+  for (let i = array.length - 1; i > array.length - limit - 1; i--) {
+    // swap items
+    const indexToPick = Math.floor(Math.random() * (i + 1))
+    const pickedItem = array[indexToPick]
+    array[indexToPick] = array[i]
+    array[i] = pickedItem
+
+    // then pick an item
+    picked.push(pickedItem)
+  }
+
+  return picked
 }

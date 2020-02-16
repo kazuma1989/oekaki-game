@@ -3,14 +3,11 @@
 /**
  * @returns {ContentService}
  */
-function doGet({ parameter: { version, page, perPage } }) {
+function doGet({ parameter: { version } }) {
   let values
   switch (version) {
     case 'v2':
-      values = v2({
-        page: parseInt(page) || undefined,
-        perPage: parseInt(perPage) || undefined,
-      })
+      values = v2()
       break
 
     case 'v1':
