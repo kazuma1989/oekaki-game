@@ -4,6 +4,7 @@ import { useDispatch, useStore } from './reducer.js'
 import Button from './Button.js'
 import IconButton from './IconButton.js'
 import Canvas, { useContext2D } from './Canvas.js'
+import Timer from './Timer.js'
 
 export default function CanvasView() {
   const dispatch = useDispatch()
@@ -66,6 +67,8 @@ export default function CanvasView() {
 
   return (
     <div className={style}>
+      <Timer className={styleTimer} />
+
       <div className={styleFloating}>
         <IconButton label="↩️" onClick={undo} />
         <IconButton label="💣" onClick={clearAll} />
@@ -96,6 +99,13 @@ const style = css`
     'button button' 15%
     / 50% 50%;
   gap: 2vw 0;
+`
+
+const styleTimer = css`
+  position: fixed;
+  top: 2vw;
+  left: 2vw;
+  z-index: 10;
 `
 
 const styleFloating = css`

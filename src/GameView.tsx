@@ -1,6 +1,7 @@
 import css from '/app/web_modules/csz.js'
 import { useSelector, useDispatch } from './reducer.js'
 import Button from './Button.js'
+import Timer from './Timer.js'
 
 export default function GameView() {
   const dispatch = useDispatch()
@@ -25,8 +26,7 @@ export default function GameView() {
       ? passCount + correctCount
       : passCount + correctCount - 1
 
-  const questionsLeft = questions.length - index
-  const finished = questionsLeft === 0
+  const finished = questions.length === index
 
   let { mainText = '', subText = '' } = questions[index] || {}
   // お題をマスクして隠す
@@ -38,7 +38,8 @@ export default function GameView() {
   return (
     <div className={style}>
       <div className={styleHeader}>
-        残り {questionsLeft} 問
+        <Timer />
+
         <Button
           className={styleHeaderButton}
           label="結果"
