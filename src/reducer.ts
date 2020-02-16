@@ -13,11 +13,11 @@ export type State = {
   loadingState: 'initial' | 'waiting' | 'loading' | 'complete' | 'error'
   questions: {
     mainText: string
-    subText: string
+    subText?: string
   }[]
   tutorialQuestions: {
     mainText: string
-    subText: string
+    subText?: string
   }[]
 
   drawingHistory: (['start' | 'draw', number, number] | ['clear'])[]
@@ -77,7 +77,10 @@ type Action =
   | {
       type: 'APIGetSheetValues.Complete'
       payload: {
-        sheetValues: (string | boolean)[][]
+        sheetValues: {
+          mainText: string
+          subText?: string
+        }[]
       }
     }
   | {
@@ -115,7 +118,11 @@ const initialState: State = {
   correctCount: 0,
   loadingState: 'initial',
   questions: [],
-  tutorialQuestions: [],
+  tutorialQuestions: [
+    { mainText: '太陽' },
+    { mainText: '山' },
+    { mainText: '川' },
+  ],
   drawingHistory: [],
   cacheClearingState: 'initial',
 }
@@ -224,24 +231,7 @@ export const reducer: (state: State, action: Action) => State = produce(
         const { sheetValues } = action.payload
 
         state.loadingState = 'complete'
-
-        const parsed = sheetValues
-          .slice(1)
-          .map(([mainText, subText, forTutorial, disabled]) => {
-            if (disabled || (!mainText && !subText)) {
-              return null
-            }
-
-            return {
-              mainText: mainText as string,
-              subText: subText as string,
-              forTutorial: Boolean(forTutorial),
-            }
-          })
-          .filter(nonNull)
-
-        state.questions = shuffle(parsed.filter(q => !q.forTutorial))
-        state.tutorialQuestions = shuffle(parsed.filter(q => q.forTutorial))
+        state.questions = shuffle(sheetValues)
         break
       }
 
@@ -295,8 +285,4 @@ function shuffle<T>(array: T[]): T[] {
   }
 
   return target
-}
-
-function nonNull<T>(value: T | null | undefined): value is T {
-  return value !== null && value !== undefined
 }
