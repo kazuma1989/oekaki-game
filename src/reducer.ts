@@ -214,6 +214,7 @@ export const reducer: (state: State, action: Action) => State = produce(
         state.questionState = 'drawing'
         state.passCount = 0
         state.correctCount = 0
+        state.loadingState = 'waiting'
         break
       }
 
