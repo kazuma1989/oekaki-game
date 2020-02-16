@@ -6,19 +6,25 @@ export default function TimeManager() {
   const timeLeft = useTimer()
 
   const noTimeLeft = timeLeft <= 0
+  const nonGameView = useSelector(
+    state => state.viewMode === 'opening' || state.viewMode === 'config',
+  )
+
+  const gameFinished = !nonGameView && noTimeLeft
   useEffect(() => {
-    if (!noTimeLeft) return
+    if (!gameFinished) return
 
     dispatch({ type: 'TimeManager.Finished' })
-  }, [noTimeLeft])
+  }, [gameFinished])
 
   return null
 }
 
-const timeLimit = 300 * 1000
-
 export function useTimer() {
-  const gameStartAt = useSelector(state => state.gameStartAt)
+  const [gameStartAt, timeLimit] = useSelector(state => [
+    state.gameStartAt,
+    state.timeLimit,
+  ])
 
   const [currentTime, setCurrentTime] = useState(Date.now())
   const timeLeft = timeLimit - (currentTime - gameStartAt)

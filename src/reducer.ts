@@ -10,6 +10,7 @@ export type State = {
   passCount: number
   correctCount: number
   gameStartAt: number
+  timeLimit: number
   timerFinished: boolean
 
   loadingState: 'initial' | 'waiting' | 'loading' | 'complete' | 'error'
@@ -129,6 +130,7 @@ const initialState: State = {
   passCount: 0,
   correctCount: 0,
   gameStartAt: 0,
+  timeLimit: 300 * 1000,
   timerFinished: false,
 
   loadingState: 'initial',
