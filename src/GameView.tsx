@@ -14,11 +14,13 @@ export default function GameView() {
     questionState,
     passCount,
     correctCount,
+    timerFinished,
   ] = useSelector(state => [
     state.tutorial ? state.tutorialQuestions : state.questions,
     state.questionState,
     state.passCount,
     state.correctCount,
+    state.timerFinished,
   ])
 
   const index =
@@ -26,7 +28,8 @@ export default function GameView() {
       ? passCount + correctCount
       : passCount + correctCount - 1
 
-  const finished = questions.length === index
+  const questionFinished = questions.length === index
+  const finished = questionFinished || timerFinished
 
   let { mainText = '', subText = '' } = questions[index] || {}
   // お題をマスクして隠す
@@ -62,6 +65,10 @@ export default function GameView() {
               正解!
             </span>
           )}
+        </div>
+      ) : timerFinished ? (
+        <div className={styleQuestion}>
+          <span className={styleQuestionSub}>時間ぎれ!</span>
         </div>
       ) : (
         <div className={styleQuestion}>

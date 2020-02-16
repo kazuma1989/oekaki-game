@@ -10,6 +10,7 @@ export type State = {
   passCount: number
   correctCount: number
   gameStartAt: number
+  timerFinished: boolean
 
   loadingState: 'initial' | 'waiting' | 'loading' | 'complete' | 'error'
   questions: {
@@ -62,6 +63,9 @@ type Action =
       payload: {
         timestamp: number
       }
+    }
+  | {
+      type: 'TimeManager.Finished'
     }
   | {
       type: 'passQuestion'
@@ -125,6 +129,7 @@ const initialState: State = {
   passCount: 0,
   correctCount: 0,
   gameStartAt: 0,
+  timerFinished: false,
 
   loadingState: 'initial',
   questions: [],
@@ -206,6 +211,12 @@ export const reducer: (state: State, action: Action) => State = produce(
         break
       }
 
+      case 'TimeManager.Finished': {
+        state.timerFinished = true
+        state.viewMode = 'game'
+        break
+      }
+
       case 'passQuestion': {
         state.viewMode = 'game'
         state.questionState = 'passed'
@@ -233,6 +244,7 @@ export const reducer: (state: State, action: Action) => State = produce(
         state.passCount = 0
         state.correctCount = 0
         state.gameStartAt = 0
+        state.timerFinished = false
         state.loadingState = 'waiting'
         break
       }

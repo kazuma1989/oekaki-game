@@ -1,10 +1,11 @@
 import { useSelector } from './reducer.js'
 import APIGetSheetValues from './APIGetSheetValues.js'
+import TimeManager from './TimeManager.js'
 import OpeningView from './OpeningView.js'
+import ConfigView from './ConfigView.js'
 import GameView from './GameView.js'
 import CanvasView from './CanvasView.js'
 import ResultView from './ResultView.js'
-import ConfigView from './ConfigView.js'
 
 export default function App() {
   const viewMode = useSelector(state => state.viewMode)
@@ -12,6 +13,7 @@ export default function App() {
   return (
     <>
       <APIGetSheetValues />
+      <TimeManager />
 
       {(() => {
         switch (viewMode) {
