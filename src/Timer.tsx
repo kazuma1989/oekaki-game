@@ -1,17 +1,22 @@
 import { useEffect, useState } from '/app/web_modules/preact/hooks.js'
 import { useSelector } from './reducer.js'
 
+const timeLimit = 300 * 1000
+
 export default function Timer({ className }: { className?: string }) {
   const gameStartAt = useSelector(state => state.gameStartAt)
 
   const [currentTime, setCurrentTime] = useState(Date.now())
+  const timeLeft = timeLimit - (currentTime - gameStartAt)
+
+  const noTimeLeft = timeLeft <= 0
   useEffect(() => {
+    if (noTimeLeft) return
+
     const timerId = setInterval(() => setCurrentTime(Date.now()), 1000)
 
     return () => clearInterval(timerId)
-  }, [])
-
-  const timeLeft = 300 * 1000 - (currentTime - gameStartAt)
+  }, [noTimeLeft])
 
   return <div className={className}>{toMMSS(timeLeft)}</div>
 }
