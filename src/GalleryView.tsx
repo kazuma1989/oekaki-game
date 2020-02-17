@@ -14,7 +14,7 @@ export default function GalleryView() {
       <IconButton className={styleFloating} label="&times;" onClick={close} />
 
       {gallery.map(({ title, status, dataURL }) => (
-        <div>
+        <div key={title}>
           {title}
           <span className={styleLabel}>
             (
@@ -27,7 +27,7 @@ export default function GalleryView() {
             )
           </span>
 
-          <img className={styleImage} key={title} alt={title} src={dataURL} />
+          <img className={styleImage} alt={title} src={dataURL} />
         </div>
       ))}
     </div>

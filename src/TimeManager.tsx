@@ -15,7 +15,7 @@ export default function TimeManager() {
     if (!gameFinished) return
 
     dispatch({ type: 'TimeManager.Finished' })
-  }, [gameFinished])
+  }, [dispatch, gameFinished])
 
   return null
 }
