@@ -95,6 +95,10 @@ class Context2D {
     })
   }
 
+  toWebp() {
+    return this.ref.current?.canvas.toDataURL('image/webp') ?? 'data:,'
+  }
+
   start(x: number, y: number) {
     this.drawDot(x, y)
     this.beginPath(x, y)

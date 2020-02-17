@@ -6,6 +6,7 @@ import ConfigView from './ConfigView.js'
 import GameView from './GameView.js'
 import CanvasView from './CanvasView.js'
 import ResultView from './ResultView.js'
+import GalleryView from './GalleryView.js'
 
 export default function App() {
   const viewMode = useSelector(state => state.viewMode)
@@ -31,6 +32,9 @@ export default function App() {
 
           case 'result':
             return <ResultView />
+
+          case 'gallery':
+            return <GalleryView />
 
           default: {
             const _: never = viewMode

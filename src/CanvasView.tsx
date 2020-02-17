@@ -8,8 +8,20 @@ import Timer from './Timer.js'
 
 export default function CanvasView() {
   const dispatch = useDispatch()
-  const passQuestion = () => dispatch({ type: 'passQuestion' })
-  const correctQuestion = () => dispatch({ type: 'correctQuestion' })
+  const passQuestion = () =>
+    dispatch({
+      type: 'passQuestion',
+      payload: {
+        dataURL: ctx.toWebp(),
+      },
+    })
+  const correctQuestion = () =>
+    dispatch({
+      type: 'correctQuestion',
+      payload: {
+        dataURL: ctx.toWebp(),
+      },
+    })
 
   const ctx = useContext2D()
   const startDrawing = (x: number, y: number) => {

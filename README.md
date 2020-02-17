@@ -4,6 +4,8 @@
 
 ## todo
 
+- iOS Safari でキャッシュクリアがうまくいかない
+
 ## URLs
 
 - https://www.flaticon.com/free-icon/easel_2492998
