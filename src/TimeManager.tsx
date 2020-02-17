@@ -1,21 +1,19 @@
-import { useEffect, useState } from '/app/web_modules/preact/hooks.js'
+import { useEffect, useState, useRef } from '/app/web_modules/preact/hooks.js'
 import { useSelector, useDispatch } from './reducer.js'
 
 export default function TimeManager() {
   const dispatch = useDispatch()
-  const timeLeft = useTimer()
 
-  const noTimeLeft = timeLeft <= 0
-  const nonGameView = useSelector(
-    state => state.viewMode === 'opening' || state.viewMode === 'config',
-  )
+  const timeLeftRef = useRef(0)
+  const prevTimeLeft = timeLeftRef.current
+  timeLeftRef.current = useTimer()
 
-  const gameFinished = !nonGameView && noTimeLeft
+  const finishedJustNow = prevTimeLeft > 0 && timeLeftRef.current <= 0
   useEffect(() => {
-    if (!gameFinished) return
+    if (!finishedJustNow) return
 
     dispatch({ type: 'TimeManager.Finished' })
-  }, [dispatch, gameFinished])
+  }, [dispatch, finishedJustNow])
 
   return null
 }
