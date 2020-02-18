@@ -6,8 +6,10 @@ import IconButton from './IconButton.js'
 export default function OpeningView() {
   const dispatch = useDispatch()
   const reload = () => dispatch({ type: 'APIGetSheetValues.Reload' })
-  const startTutorial = () => dispatch({ type: 'startTutorial' })
-  const startGame = () => dispatch({ type: 'startGame' })
+  const startTutorial = () =>
+    dispatch({ type: 'startTutorial', payload: { timestamp: Date.now() } })
+  const startGame = () =>
+    dispatch({ type: 'startGame', payload: { timestamp: Date.now() } })
   const showConfig = () => dispatch({ type: 'openConfig' })
 
   const loading = useSelector(state => state.loadingState === 'loading')

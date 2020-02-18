@@ -7,6 +7,7 @@ export default function ResultView() {
   const dispatch = useDispatch()
   const close = () => dispatch({ type: 'closeResult' })
   const reset = () => dispatch({ type: 'resetGame' })
+  const showGallery = () => dispatch({ type: 'showGallery' })
 
   const [passCount, correctCount] = useSelector(state => [
     state.passCount,
@@ -22,6 +23,7 @@ export default function ResultView() {
       <div className={styleCount}>正解 {correctCount} 回!</div>
       <div className={styleCount}>パス {passCount} 回!</div>
 
+      <Button theme="default" label="感想戦" onClick={showGallery} />
       <Button theme="danger" label="リセット" onClick={reset} />
     </div>
   )

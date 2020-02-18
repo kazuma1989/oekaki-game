@@ -4,11 +4,24 @@ import { useDispatch, useStore } from './reducer.js'
 import Button from './Button.js'
 import IconButton from './IconButton.js'
 import Canvas, { useContext2D } from './Canvas.js'
+import Timer from './Timer.js'
 
 export default function CanvasView() {
   const dispatch = useDispatch()
-  const passQuestion = () => dispatch({ type: 'passQuestion' })
-  const correctQuestion = () => dispatch({ type: 'correctQuestion' })
+  const passQuestion = () =>
+    dispatch({
+      type: 'passQuestion',
+      payload: {
+        dataURL: ctx.toWebp(),
+      },
+    })
+  const correctQuestion = () =>
+    dispatch({
+      type: 'correctQuestion',
+      payload: {
+        dataURL: ctx.toWebp(),
+      },
+    })
 
   const ctx = useContext2D()
   const startDrawing = (x: number, y: number) => {
@@ -66,6 +79,8 @@ export default function CanvasView() {
 
   return (
     <div className={style}>
+      <Timer className={styleTimer} />
+
       <div className={styleFloating}>
         <IconButton label="↩️" onClick={undo} />
         <IconButton label="💣" onClick={clearAll} />
@@ -96,6 +111,13 @@ const style = css`
     'button button' 15%
     / 50% 50%;
   gap: 2vw 0;
+`
+
+const styleTimer = css`
+  position: fixed;
+  top: 2vw;
+  left: 2vw;
+  z-index: 10;
 `
 
 const styleFloating = css`

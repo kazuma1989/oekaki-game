@@ -3,12 +3,15 @@ import { Store } from '/app/web_modules/redux.js'
 import { createReduxHooks } from './redux-utils.js'
 
 export type State = {
-  viewMode: 'opening' | 'config' | 'game' | 'canvas' | 'result'
+  viewMode: 'opening' | 'config' | 'game' | 'canvas' | 'result' | 'gallery'
   tutorial: boolean
 
   questionState: 'drawing' | 'passed' | 'correct'
   passCount: number
   correctCount: number
+  gameStartAt: number
+  timeLimit: number
+  timerFinished: boolean
 
   loadingState: 'initial' | 'waiting' | 'loading' | 'complete' | 'error'
   questions: {
@@ -20,7 +23,15 @@ export type State = {
     subText?: string
   }[]
 
+  /**
+   * [action, x, y]
+   */
   drawingHistory: (['start' | 'draw', number, number] | ['clear'])[]
+  gallery: {
+    title: string
+    status: 'correct' | 'passed'
+    dataURL: string
+  }[]
 
   cacheClearingState: 'initial' | 'waiting' | 'loading' | 'complete' | 'error'
 }
@@ -48,19 +59,40 @@ type Action =
       type: 'closeResult'
     }
   | {
+      type: 'showGallery'
+    }
+  | {
+      type: 'closeGallery'
+    }
+  | {
       type: 'startDrawing'
     }
   | {
       type: 'startGame'
+      payload: {
+        timestamp: number
+      }
     }
   | {
       type: 'startTutorial'
+      payload: {
+        timestamp: number
+      }
+    }
+  | {
+      type: 'TimeManager.Finished'
     }
   | {
       type: 'passQuestion'
+      payload: {
+        dataURL: string
+      }
     }
   | {
       type: 'correctQuestion'
+      payload: {
+        dataURL: string
+      }
     }
   | {
       type: 'goToNextQuestion'
@@ -113,9 +145,14 @@ export { Provider, useDispatch, useSelector, useStore }
 const initialState: State = {
   viewMode: 'opening',
   tutorial: false,
+
   questionState: 'drawing',
   passCount: 0,
   correctCount: 0,
+  gameStartAt: 0,
+  timeLimit: 300 * 1000,
+  timerFinished: false,
+
   loadingState: 'initial',
   questions: [],
   tutorialQuestions: [
@@ -123,7 +160,10 @@ const initialState: State = {
     { mainText: '山' },
     { mainText: '川' },
   ],
+
   drawingHistory: [],
+  gallery: [],
+
   cacheClearingState: 'initial',
 }
 
@@ -171,36 +211,80 @@ export const reducer: (state: State, action: Action) => State = produce(
         break
       }
 
+      case 'showGallery': {
+        state.viewMode = 'gallery'
+        break
+      }
+
+      case 'closeGallery': {
+        state.viewMode = 'result'
+        break
+      }
+
       case 'startDrawing': {
         state.viewMode = 'canvas'
         break
       }
 
       case 'startGame': {
+        const { timestamp } = action.payload
+
         state.tutorial = false
         state.viewMode = 'game'
+        state.gameStartAt = timestamp
         break
       }
 
       case 'startTutorial': {
+        const { timestamp } = action.payload
+
         state.tutorial = true
+        state.viewMode = 'game'
+        state.gameStartAt = timestamp
+        break
+      }
+
+      case 'TimeManager.Finished': {
+        state.timerFinished = true
         state.viewMode = 'game'
         break
       }
 
       case 'passQuestion': {
+        const { dataURL } = action.payload
+        const { mainText } = (state.tutorial
+          ? state.tutorialQuestions
+          : state.questions)[state.passCount + state.correctCount]
+        state.gallery.push({
+          title: mainText,
+          status: 'passed',
+          dataURL,
+        })
+
         state.viewMode = 'game'
         state.questionState = 'passed'
         state.passCount += 1
         state.drawingHistory = []
+
         break
       }
 
       case 'correctQuestion': {
+        const { dataURL } = action.payload
+        const { mainText } = (state.tutorial
+          ? state.tutorialQuestions
+          : state.questions)[state.passCount + state.correctCount]
+        state.gallery.push({
+          title: mainText,
+          status: 'correct',
+          dataURL,
+        })
+
         state.viewMode = 'game'
         state.questionState = 'correct'
         state.correctCount += 1
         state.drawingHistory = []
+
         break
       }
 
@@ -214,6 +298,11 @@ export const reducer: (state: State, action: Action) => State = produce(
         state.questionState = 'drawing'
         state.passCount = 0
         state.correctCount = 0
+        state.drawingHistory = []
+        state.gallery = []
+        state.gameStartAt = 0
+        state.timerFinished = false
+        state.loadingState = 'waiting'
         break
       }
 

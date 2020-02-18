@@ -14,20 +14,34 @@ export default function Canvas({
   onPointEnd?(x: number, y: number): void
   className?: string
 }) {
+  const mouseMoving = useRef(false)
+
   return (
     <canvas
       className={`${style} ${className}`}
       ref={ctx?.init}
       // Mouse
-      onMouseDown={mouse(onPointStart)}
-      onMouseMove={mouse(onPointMove)}
-      onMouseUp={mouse(onPointEnd)}
-      onMouseLeave={mouse(onPointEnd)}
+      onMouseDownCapture={e => {
+        mouseMoving.current = true
+        mouse(onPointStart)(e)
+      }}
+      onMouseMoveCapture={e => {
+        if (!mouseMoving.current) return
+        mouse(onPointMove)(e)
+      }}
+      onMouseUpCapture={e => {
+        mouseMoving.current = false
+        mouse(onPointEnd)(e)
+      }}
+      onMouseLeaveCapture={e => {
+        mouseMoving.current = false
+        mouse(onPointEnd)(e)
+      }}
       // Touch
-      onTouchStart={touch(onPointStart)}
-      onTouchMove={touch(onPointMove)}
-      onTouchEnd={touch(onPointEnd)}
-      onTouchCancel={touch(onPointEnd)}
+      onTouchStartCapture={touch(onPointStart)}
+      onTouchMoveCapture={touch(onPointMove)}
+      onTouchEndCapture={touch(onPointEnd)}
+      onTouchCancelCapture={touch(onPointEnd)}
     />
   )
 }
@@ -38,8 +52,9 @@ function mouse(handler?: (x: number, y: number) => void) {
 
 function touch(handler?: (x: number, y: number) => void) {
   return (e: TouchEvent) => {
-    // 点を 1 つだけ描画したいのに start -> draw -> start の 3 イベントが
-    // 同時に発生してしまい、undo の回数が感覚より多くなってしまうのを防ぐ
+    // 点を 1 つだけ描画したいのに touchstart, mousedown の 2 イベントが
+    // 連続で発生してしまい、undo の回数が感覚より多くなってしまうのを防ぐ。
+    // stopImmediatePropagation() では防止できなかった。
     e.preventDefault()
 
     const { touches } = e
@@ -93,6 +108,10 @@ class Context2D {
       canvas.width = canvas.clientWidth
       canvas.height = canvas.clientHeight
     })
+  }
+
+  toWebp() {
+    return this.ref.current?.canvas.toDataURL('image/webp') ?? 'data:,'
   }
 
   start(x: number, y: number) {
