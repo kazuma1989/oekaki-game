@@ -20,73 +20,159 @@
     />
     <link rel="stylesheet" href="/app/style.css" />
     <style>
+      :root {
+        font-weight: initial;
+        font-size: initial;
+      }
+      a {
+        color: var(--cyanBlue10);
+      }
+      p {
+        margin: 1em 5vw 0;
+      }
+
       .cover-screen {
         width: 100%;
         height: 100%;
       }
 
-      .credit-view {
+      .centering {
         display: flex;
-        flex-flow: column;
-        justify-content: center;
+        flex-flow: column nowrap;
         align-items: center;
-
-        font-size: initial;
-        text-align: center;
       }
+
+      .h1 {
+        margin-top: 1em;
+      }
+      .h2 {
+        margin-top: 2em;
+      }
+
+      .developer-avatar {
+        width: 180px;
+        height: 180px;
+        margin: 0.5em;
+        border-radius: 50%;
+      }
+
       .credit-view-icon {
         width: 50%;
         margin: 0.5em;
       }
+      .credit-view-text {
+        text-align: center;
+      }
 
+      .spacer {
+        margin-top: 25vh;
+      }
+      .app-start-button-container {
+        background-color: rgba(255, 255, 255, 0.8);
+        width: 100%;
+        padding: 3vmin;
+
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+
+        position: fixed;
+        bottom: 0;
+        left: 0;
+      }
       .app-start-button {
         background-color: var(--cyanBlue10);
         color: var(--white);
-        font-size: 10vw;
+        font-size: 10vmin;
+        font-weight: 900;
         text-decoration: none;
         text-align: center;
 
         display: block;
-        padding: 4vw;
-        border-radius: 2vw;
+        padding: 4vmin;
+        border-radius: 2vmin;
 
-        width: 7.5em;
-        position: absolute;
-        bottom: 10%;
-        left: calc(50% - 3.75em);
+        width: 9em;
       }
     </style>
   </head>
 
-  <body class="cover-screen">
-    <div class="credit-view cover-screen">
-      <img
-        class="credit-view-icon"
-        alt="イーゼルくん"
-        src="/app/icons/easel.svg"
-      />
+  <body class="cover-screen centering">
+    <h1 class="h1">お絵かき お題当て</h1>
+    <p>
+      友だちと楽しくお絵かき! 何を描いたか当てよう!（おとなも けっこう
+      楽しめる）
+    </p>
+
+    <h2 class="h2">遊び方</h2>
+    <p>制限時間（5 分）内にできるだけ多く正解することが勝利条件です。</p>
+
+    <div style="margin-top: 1em;">
+      <p>
+        1. 2 人以上でチームを組みます。（1
+        つのスマホを使い回すので、リアルな場で集まってください）
+      </p>
+      <img alt="スマホを2人で見ている様子" src="images/team.webp" />
+
+      <p>2. 1 人がお題を見て、その絵を描きます。</p>
+      <img alt="お題を見て絵を描いている様子" src="images/drawing.webp" />
 
       <p>
-        Icons made by
-        <a
-          href="https://www.flaticon.com/authors/freepik"
-          title="Freepik"
-          target="_blank"
-          rel="noopener"
-          >Freepik</a
-        >
-        from
-        <br />
-        <a
-          href="https://www.flaticon.com/"
-          title="Flaticon"
-          target="_blank"
-          rel="noopener"
-          >www.flaticon.com</a
-        >
+        3. ほかの人はその絵が何かを当てます。描き途中でも
+        OK。言い直し、描き直し、パスは無制限。
       </p>
+      <img alt="スマホを2人で見ている様子" src="images/team.webp" />
+
+      <p>4. 最も正解数が多いチームの勝ち。</p>
+      <img alt="トロフィーを掲げている様子" src="images/winner.webp" />
     </div>
 
-    <a class="app-start-button" href="/app/">アプリを起動</a>
+    <h2 class="h2">開発者</h2>
+    <img
+      class="developer-avatar"
+      alt="GitHub avatar"
+      src="https://avatars1.githubusercontent.com/u/15844862?s=460&v=4"
+    />
+    <p>kazuma1989 🦐</p>
+    <a href="https://github.com/kazuma1989" target="_blank" rel="noopener"
+      >GitHub</a
+    >
+    <a
+      href="https://www.linkedin.com/in/kazuma1989/"
+      target="_blank"
+      rel="noopener"
+      >LinkedIn</a
+    >
+
+    <h2 class="h2">Attribution</h2>
+    <img
+      class="credit-view-icon"
+      alt="イーゼルくん"
+      src="/app/icons/easel.svg"
+    />
+    <p class="credit-view-text">
+      Icons made by
+      <a
+        href="https://www.flaticon.com/authors/freepik"
+        title="Freepik"
+        target="_blank"
+        rel="noopener"
+        >Freepik</a
+      >
+      from
+      <br />
+      <a
+        href="https://www.flaticon.com/"
+        title="Flaticon"
+        target="_blank"
+        rel="noopener"
+        >www.flaticon.com</a
+      >
+    </p>
+
+    <hr class="spacer" />
+    <div class="app-start-button-container">
+      <a class="app-start-button" href="/app/">遊んでみる!</a>
+    </div>
   </body>
 </html>
