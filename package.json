@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "csz": "^1.2.0",
-    "immer": "^5.3.6",
+    "immer": "^8.0.1",
     "preact": "^10.3.1",
     "redux": "^4.0.5",
     "workbox-window": "^5.0.0"
